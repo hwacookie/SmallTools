@@ -8,8 +8,8 @@
 package de.mbaaba.tool;
 
 enum DisplayMode {
-	TIME_PASSED("Zeit vergangen ..."), TIME_LEFT("Zeit übrig ..."), TIME_STARTED("Gekommen um ..."), TIME_FINISHED(
-			"Feierabend ist um ..."), IDLE_SINCE("Untätig seid ...");
+	TIME_PASSED("Arbeitszeit heute"), TIME_LEFT("Plus/Minus"), TIME_STARTED("Gekommen um"), TIME_FINISHED(
+			"Feierabend ist um"), IDLE_SINCE("Untätig seid");
 
 	private String msg;
 

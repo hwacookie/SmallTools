@@ -102,7 +102,7 @@ public class PresenceWatcher implements PresenceListener {
 			System.out.println("The system tray is not available");
 		} else {
 			trayItem = new TrayItem(tray, SWT.NONE);
-			trayItem.setToolTipText("Presence Watcher - IDLE");
+			//trayItem.setToolTipText("Presence Watcher - IDLE");
 			trayItem.addListener(SWT.Show, new Listener() {
 				public void handleEvent(Event event) {
 				}
@@ -289,7 +289,7 @@ public class PresenceWatcher implements PresenceListener {
 			}
 
 		});
-		item.setText(dm.getMsg());
+		item.setText(dm.getMsg()+" ...");
 	}
 
 	private void setColorScheme(final int aColor) {
@@ -362,12 +362,11 @@ public class PresenceWatcher implements PresenceListener {
 	}
 
 	public void statusChange(final Activity aActivity) {
-		shell.getDisplay().asyncExec(new Runnable() {
-
-			public void run() {
-				trayItem.setToolTipText("Presence Watcher - " + aActivity);
-			}
-		});
+//		shell.getDisplay().asyncExec(new Runnable() {
+//			public void run() {
+//				trayItem.setToolTipText("Presence Watcher - " + aActivity);
+//			}
+//		});
 	}
 
 	public void timeChange() {
@@ -412,12 +411,14 @@ public class PresenceWatcher implements PresenceListener {
 		default:
 			break;
 		}
+		
 		display = getDisplay();
 		if (display != null) {
 			final String newStatusString = temp;
 			getDisplay().asyncExec(new Runnable() {
 
 				public void run() {
+					trayItem.setToolTipText(displayMode.getMsg()+": "+newStatusString);
 					lbStatus.setText(newStatusString);
 					if (presenceWatcher.getEndToday() - System.currentTimeMillis() < 0) {
 						// did my work today
