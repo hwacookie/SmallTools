@@ -11,12 +11,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
-import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import de.mbaaba.tools.shared.Style;
 
@@ -67,15 +64,15 @@ public class MainWindow extends Composite {
 		timer.schedule(1000);
 
 		DockPanel dockPanel = new DockPanel();
-		dockPanel.setBorderWidth(1);
 		initWidget(dockPanel);
-		dockPanel.setHeight("100%");
-		dockPanel.setWidth("165px");
+		dockPanel.setSize("800", "100%");
 
 		Image image = new Image("HippieIpsum.png");
 		dockPanel.add(image, DockPanel.WEST);
 
-		// createMenuBar(vPanel);
+		MenuBar createMenuBar = createMenuBar(dockPanel);
+		dockPanel.add(createMenuBar, DockPanel.NORTH);
+
 		CellPanel themeInfoPanel = createThemeInfoPanel();
 		dockPanel.add(themeInfoPanel, DockPanel.NORTH);
 
@@ -86,8 +83,10 @@ public class MainWindow extends Composite {
 
 		CellPanel statusPanel = createStatusBar();
 		dockPanel.add(statusPanel, DockPanel.SOUTH);
-		dockPanel.setCellVerticalAlignment(statusPanel, HasVerticalAlignment.ALIGN_BOTTOM);
-		dockPanel.setCellHorizontalAlignment(statusPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+		dockPanel.setCellVerticalAlignment(statusPanel,
+				HasVerticalAlignment.ALIGN_BOTTOM);
+		dockPanel.setCellHorizontalAlignment(statusPanel,
+				HasHorizontalAlignment.ALIGN_RIGHT);
 	}
 
 	protected void setStyles(String[] availableThemes) {
@@ -107,7 +106,8 @@ public class MainWindow extends Composite {
 		// clear old lists
 		wordListPanel.setCurrentStyle(null);
 		generatorPanel.setCurrentStyle(null);
-		final WaitBox box = new WaitBox("Please Wait", "Loading style \"" + aStyleName + "\", please wait ...");
+		final WaitBox box = new WaitBox("Please Wait", "Loading style \""
+				+ aStyleName + "\", please wait ...");
 		box.show();
 
 		TypedListener<Style> listener = new TypedListener<Style>() {
@@ -115,8 +115,9 @@ public class MainWindow extends Composite {
 			@Override
 			public void notifyMe(Style aStyle) {
 				lbStyle.setText("Style: " + aStyle.getName());
-				styleDesription.setHTML("<div align=left><h3>" + aStyle.getName() + " - Style" + "</h3></div>&nbsp;&nbsp;"
-						+ aStyle.getName());
+				styleDesription.setHTML("<div align=left><h3>"
+						+ aStyle.getName() + " - Style"
+						+ "</h3></div>&nbsp;&nbsp;" + aStyle.getName());
 				wordListPanel.setCurrentStyle(aStyle);
 				generatorPanel.setCurrentStyle(aStyle);
 				setCurrentStyle(aStyle);
@@ -126,7 +127,8 @@ public class MainWindow extends Composite {
 			@Override
 			public void notifyFail(Throwable aCaught) {
 				box.hide();
-				AlertBox alertBox = new AlertBox("Error", "Could not load style: " + aCaught.getMessage());
+				AlertBox alertBox = new AlertBox("Error",
+						"Could not load style: " + aCaught.getMessage());
 				alertBox.show();
 			}
 		};
@@ -147,45 +149,49 @@ public class MainWindow extends Composite {
 
 		Label lbVersion = new Label("Version: " + VERSION_STRING);
 		statusPanel.add(lbVersion);
-		statusPanel.setCellVerticalAlignment(lbVersion, HasVerticalAlignment.ALIGN_MIDDLE);
+		statusPanel.setCellVerticalAlignment(lbVersion,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 
 		lbStyle = new Label("Theme: " + "Default");
 		lbStyle.setText("Theme: " + "Default");
 		statusPanel.add(lbStyle);
-		statusPanel.setCellVerticalAlignment(lbStyle, HasVerticalAlignment.ALIGN_MIDDLE);
+		statusPanel.setCellVerticalAlignment(lbStyle,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 		return statusPanel;
 	}
 
-	private void createMenuBar(VerticalPanel vPanel) {
+	private MenuBar createMenuBar(DockPanel vPanel) {
 		MenuBar mainMenu = new MenuBar(false);
-		vPanel.add(mainMenu);
 
 		MenuItem miThemes = createThemesMenu();
 		mainMenu.addItem(miThemes);
 
 		MenuItem miHelp = createHelpMenu();
 		mainMenu.addItem(miHelp);
+		return mainMenu;
 	}
 
 	private CellPanel createCenterPanel() {
 		HorizontalPanel centerPanel = new HorizontalPanel();
-		centerPanel.setSize("800px", "576px");
+		centerPanel.setSpacing(5);
+		centerPanel.setSize("814px", "576px");
 
 		wordListPanel = new WordListPanel();
 		wordListPanel.setStyleName("gwt-StackPanel");
 		wordListPanel.setSize("30%", "100%");
 
-		generatorPanel = new GeneratorPanel();
-		generatorPanel.setBorderWidth(0);
-		generatorPanel.setSize("70%", "100%");
-
 		centerPanel.setCellHeight(wordListPanel, "100%");
 		centerPanel.setCellWidth(wordListPanel, "300");
 		centerPanel.add(wordListPanel);
 
+		generatorPanel = new GeneratorPanel();
+		centerPanel.add(generatorPanel);
+		generatorPanel.setWidth("526px");
+		generatorPanel.setBorderWidth(0);
+		generatorPanel.setHeight("100%");
+
 		centerPanel.setCellHeight(generatorPanel, "100%");
 		centerPanel.setCellWidth(generatorPanel, "100%");
-		centerPanel.add(generatorPanel);
 
 		return centerPanel;
 
@@ -249,7 +255,8 @@ public class MainWindow extends Composite {
 			@Override
 			public void notifyFail(Throwable aCaught) {
 				box.hide();
-				AlertBox alertBox = new AlertBox("Error", "Could not save style: " + aCaught.getMessage());
+				AlertBox alertBox = new AlertBox("Error",
+						"Could not save style: " + aCaught.getMessage());
 				alertBox.show();
 			}
 		};

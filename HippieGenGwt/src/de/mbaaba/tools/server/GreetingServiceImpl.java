@@ -3,8 +3,6 @@ package de.mbaaba.tools.server;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -12,7 +10,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.gwt.user.client.Random;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.mbaaba.tools.client.GreetingService;
@@ -25,7 +22,8 @@ import de.mbaaba.tools.shared.WordTypes;
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
-public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
+public class GreetingServiceImpl extends RemoteServiceServlet implements
+		GreetingService {
 
 	@Override
 	public Style getStyle(String aStyleName) throws IllegalArgumentException {
@@ -49,49 +47,56 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 	@Override
 	public void saveStyle(Style aStyle) throws IllegalArgumentException {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 		Entity entity = new Entity("StyleDescriptions", aStyle.getName());
 		entity.setProperty("content", aStyle.getDescription());
 		putToDatastore(datastore, entity);
 
 		Collection<WordList> values = aStyle.getWordsMap().values();
 		for (WordList wordList : values) {
-			entity = new Entity("WordList", aStyle.getName() + "." + wordList.getWordType());
+			entity = new Entity("WordList", aStyle.getName() + "."
+					+ wordList.getWordType());
 			entity.setProperty("content", wordList.buildString());
 			putToDatastore(datastore, entity);
 		}
 	}
-	
-	
+
 	// ------------------------------------------------------------------------------
 
 	private java.util.Random random = new java.util.Random();
 
-	private String loadList(String aTheme, WordTypes aWordType) throws IllegalArgumentException {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Key guestbookKey = KeyFactory.createKey("WordList", aTheme + "." + aWordType);
+	private String loadList(String aTheme, WordTypes aWordType)
+			throws IllegalArgumentException {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Key guestbookKey = KeyFactory.createKey("WordList", aTheme + "."
+				+ aWordType);
 		Entity greeting;
 		String wordsAsString = null;
 		try {
 			greeting = getFromDatastore(datastore, guestbookKey);
 			wordsAsString = (String) greeting.getProperty("content");
 		} catch (EntityNotFoundException e) {
-			System.out.println("No wordlist \"" + aWordType + "\" found for theme \"" + aTheme + "\"");
+			System.out.println("No wordlist \"" + aWordType
+					+ "\" found for theme \"" + aTheme + "\"");
 		}
 		if (wordsAsString == null) {
-			wordsAsString = DefaultWordLists.defaultStyle.getWordsMap().get(aWordType).buildString();
+			wordsAsString = DefaultWordLists.defaultStyle.getWordsMap()
+					.get(aWordType).buildString();
 		}
 		return wordsAsString;
 
 	}
 
-	private Entity getFromDatastore(DatastoreService datastore, Key key) throws EntityNotFoundException {
-		fakeASlowDB();
+	private Entity getFromDatastore(DatastoreService datastore, Key key)
+			throws EntityNotFoundException {
+		// fakeASlowDB();
 		return datastore.get(key);
 	}
 
 	private void putToDatastore(DatastoreService datastore, Entity entity) {
-		fakeASlowDB();
+		// fakeASlowDB();
 		datastore.put(entity);
 	}
 
@@ -104,16 +109,19 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 		}
 	}
 
-	private String getStyleDescription(String aStyleName) throws IllegalArgumentException {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	private String getStyleDescription(String aStyleName)
+			throws IllegalArgumentException {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 		Key key = KeyFactory.createKey("StyleDescriptions", aStyleName);
-		try {
-			Entity greeting = getFromDatastore(datastore, key);
-			String description = (String) greeting.getProperty("content");
-			return description;
-		} catch (EntityNotFoundException e) {
-			throw new IllegalArgumentException("No description found for " + aStyleName);
-		}
+		// try {
+		// Entity greeting = getFromDatastore(datastore, key);
+		// String description = (String) greeting.getProperty("content");
+		return "Some description";// description;
+		// } catch (EntityNotFoundException e) {
+		// throw new IllegalArgumentException("No description found for " +
+		// aStyleName);
+		// }
 	}
 
 }
