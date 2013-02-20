@@ -13370,3 +13370,189 @@ Rebinding de.mbaaba.tools.client.GreetingService
       Compiling...
          Compilation completed in 0,15 seconds
       Removing invalidated units
+Public resources found in...
+Translatable source found in...
+Found 0 cached/archived units.  Used 0 / 2732 units from cache.
+Compiling...
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   60% complete (ETR: 4 seconds)
+   70% complete (ETR: 3 seconds)
+   80% complete (ETR: 2 seconds)
+   90% complete (ETR: 1 seconds)
+   100% complete (ETR: 0 seconds)
+   Compilation completed in 12,33 seconds
+Removing invalidated units
+Finding entry point classes
+Rebinding com.google.gwt.user.client.impl.WindowImplIE.Resources
+   Adding '1' new generated units
+      Compiling...
+         Compilation completed in 0,03 seconds
+      Removing invalidated units
+Rebinding com.google.gwt.i18n.client.impl.LocaleInfoImpl
+   Invoking generator com.google.gwt.i18n.rebind.LocaleInfoGenerator
+      Processing interface com.google.gwt.i18n.client.constants.NumberConstantsImpl
+         Generating method body for notANumber()
+         Generating method body for currencyPattern()
+         Generating method body for decimalPattern()
+         Generating method body for decimalSeparator()
+         Generating method body for defCurrencyCode()
+         Generating method body for exponentialSymbol()
+         Generating method body for globalCurrencyPattern()
+         Generating method body for groupingSeparator()
+         Generating method body for infinity()
+         Generating method body for minusSign()
+         Generating method body for monetaryGroupingSeparator()
+         Generating method body for monetarySeparator()
+         Generating method body for percent()
+         Generating method body for percentPattern()
+         Generating method body for perMill()
+         Generating method body for plusSign()
+         Generating method body for scientificPattern()
+         Generating method body for simpleCurrencyPattern()
+         Generating method body for zeroDigit()
+   Adding '3' new generated units
+      Compiling...
+         Compilation completed in 0,02 seconds
+      Removing invalidated units
+Rebinding de.mbaaba.tools.client.GreetingService
+   Invoking generator com.google.gwt.user.rebind.rpc.ServiceInterfaceProxyGenerator
+      Generating client proxy for remote service interface 'de.mbaaba.tools.client.GreetingService'
+         Analyzing 'de.mbaaba.tools.client.GreetingService' for serializable types
+            Analyzing methods:
+               public abstract de.mbaaba.tools.shared.Style getStyle(java.lang.String aName) throws java.lang.IllegalArgumentException
+                  Parameter: java.lang.String aName
+                     java.lang.String is already a root type.
+               public abstract java.lang.String[] getStyleNames() throws java.lang.IllegalArgumentException
+                  Throws:
+                     java.lang.IllegalArgumentException is already a root type.
+               public abstract void saveStyle(de.mbaaba.tools.shared.Style aStyle) throws java.lang.IllegalArgumentException
+                  Throws:
+                     java.lang.IllegalArgumentException is already a root type.
+         Using a shard size of 0 for TypeSerializerCreator createMethodMap
+   Adding '29' new generated units
+      Compiling...
+         Compilation completed in 0,14 seconds
+      Removing invalidated units
+Public resources found in...
+Translatable source found in...
+Found 0 cached/archived units.  Used 0 / 2734 units from cache.
+Compiling...
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   50% complete (ETR: 5 seconds)
+   60% complete (ETR: 4 seconds)
+   70% complete (ETR: 3 seconds)
+   80% complete (ETR: 2 seconds)
+   90% complete (ETR: 1 seconds)
+   100% complete (ETR: 0 seconds)
+   Compilation completed in 13,38 seconds
+Validating units:
+   [ERROR] Errors in 'file:/D:/Dokumente%20und%20Einstellungen/walden_h1/git/SmallTools/HippieGenGwt/src/de/mbaaba/tools/client/MainWindow.java'
+      [ERROR] Line 121: areas cannot be resolved
+      [ERROR] Line 129: Listener cannot be resolved to a type
+      [ERROR] Line 129: Listener cannot be resolved to a type
+      [ERROR] Line 262: areas cannot be resolved
+      [ERROR] Line 264: The method getCurrentStyle() is undefined for the type HippieGen
+      [ERROR] Line 267: The method createText(Integer, Integer) is undefined for the type HippieGen
+      [ERROR] Line 302: The method getAvailableStyles() is undefined for the type HippieGen
+      [ERROR] Line 307: The method getAvailableStyles() is undefined for the type HippieGen
+      [ERROR] Line 336: areas cannot be resolved
+      [ERROR] Line 338: The method getCurrentStyle() is undefined for the type HippieGen
+      [ERROR] Line 345: Listener cannot be resolved to a type
+      [ERROR] Line 345: Listener cannot be resolved to a type
+Removing invalidated units
+Finding entry point classes
+Rebinding com.google.gwt.user.client.impl.WindowImplIE.Resources
+   Adding '1' new generated units
+      Compiling...
+         Compilation completed in 0,02 seconds
+      Removing invalidated units
+Rebinding com.google.gwt.i18n.client.impl.LocaleInfoImpl
+   Invoking generator com.google.gwt.i18n.rebind.LocaleInfoGenerator
+      Processing interface com.google.gwt.i18n.client.constants.NumberConstantsImpl
+         Generating method body for notANumber()
+         Generating method body for currencyPattern()
+         Generating method body for decimalPattern()
+         Generating method body for decimalSeparator()
+         Generating method body for defCurrencyCode()
+         Generating method body for exponentialSymbol()
+         Generating method body for globalCurrencyPattern()
+         Generating method body for groupingSeparator()
+         Generating method body for infinity()
+         Generating method body for minusSign()
+         Generating method body for monetaryGroupingSeparator()
+         Generating method body for monetarySeparator()
+         Generating method body for percent()
+         Generating method body for percentPattern()
+         Generating method body for perMill()
+         Generating method body for plusSign()
+         Generating method body for scientificPattern()
+         Generating method body for simpleCurrencyPattern()
+         Generating method body for zeroDigit()
+   Adding '3' new generated units
+      Compiling...
+         Compilation completed in 0,02 seconds
+      Removing invalidated units
+Public resources found in...
+Translatable source found in...
+Found 0 cached/archived units.  Used 0 / 2735 units from cache.
+Compiling...
+   60% complete (ETR: 3 seconds)
+   60% complete (ETR: 3 seconds)
+   60% complete (ETR: 3 seconds)
+   60% complete (ETR: 3 seconds)
+   60% complete (ETR: 3 seconds)
+   60% complete (ETR: 3 seconds)
+   60% complete (ETR: 3 seconds)
+   70% complete (ETR: 2 seconds)
+   80% complete (ETR: 2 seconds)
+   90% complete (ETR: 1 seconds)
+   100% complete (ETR: 0 seconds)
+   Compilation completed in 14,85 seconds
+Validating units:
+   [ERROR] Errors in 'file:/D:/Dokumente%20und%20Einstellungen/walden_h1/git/SmallTools/HippieGenGwt/src/de/mbaaba/tools/client/MainWindow.java'
+      [ERROR] Line 244: The method saveStyle(HippieGen) is undefined for the type WordListPanel
+      [ERROR] Line 249: entrySet cannot be resolved
+      [ERROR] Line 250: currentStyle cannot be resolved
+      [ERROR] Line 271: currentStyle cannot be resolved
+Removing invalidated units
+Finding entry point classes
+Rebinding com.google.gwt.user.client.impl.WindowImplIE.Resources
+   Adding '1' new generated units
+      Compiling...
+         Compilation completed in 0,02 seconds
+      Removing invalidated units
+Rebinding com.google.gwt.i18n.client.impl.LocaleInfoImpl
+   Invoking generator com.google.gwt.i18n.rebind.LocaleInfoGenerator
+      Processing interface com.google.gwt.i18n.client.constants.NumberConstantsImpl
+         Generating method body for notANumber()
+         Generating method body for currencyPattern()
+         Generating method body for decimalPattern()
+         Generating method body for decimalSeparator()
+         Generating method body for defCurrencyCode()
+         Generating method body for exponentialSymbol()
+         Generating method body for globalCurrencyPattern()
+         Generating method body for groupingSeparator()
+         Generating method body for infinity()
+         Generating method body for minusSign()
+         Generating method body for monetaryGroupingSeparator()
+         Generating method body for monetarySeparator()
+         Generating method body for percent()
+         Generating method body for percentPattern()
+         Generating method body for perMill()
+         Generating method body for plusSign()
+         Generating method body for scientificPattern()
+         Generating method body for simpleCurrencyPattern()
+         Generating method body for zeroDigit()
+   Adding '3' new generated units
+      Compiling...
+         Compilation completed in 0,02 seconds
+      Removing invalidated units
