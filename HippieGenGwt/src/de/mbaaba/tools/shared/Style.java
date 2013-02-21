@@ -71,13 +71,3 @@ public class Style implements Serializable {
 
 	}
 }
-
-// private List<Listener> listeners = new ArrayList<Listener>();
-//
-// public void addLoadCompleteListener(Listener aListener) {
-// listeners.add(aListener);
-// }
-//
-// public void removeLoadListener(Listener aListener) {
-// listeners.remove(aListener);
-// }
