@@ -26,15 +26,14 @@ public class WordListPanel extends DecoratedStackPanel {
 
 	private void createLists() {
 		createWordGroup(this, WordTypes.NUMBER_SINGULAR);
-		createWordGroup(this, WordTypes.NUMBER_PLURAL);
-		createWordGroup(this, WordTypes.ATTRIBUTE_OF_SUBJECT_SINGULAR);
-		createWordGroup(this, WordTypes.ATTRIBUTE_OF_SUBJECT_PLURAL);
 		createWordGroup(this, WordTypes.NOUN_SINGULAR);
-		createWordGroup(this, WordTypes.NOUN_PLURAL);
 		createWordGroup(this, WordTypes.VERB_SINGULAR);
+
+		createWordGroup(this, WordTypes.NUMBER_PLURAL);
+		createWordGroup(this, WordTypes.NOUN_PLURAL);
 		createWordGroup(this, WordTypes.VERB_PLURAL);
 
-		createWordGroup(this, WordTypes.ATTRIBUTE_OF_OBJECT);
+		createWordGroup(this, WordTypes.ATTRIBUTES);
 		createWordGroup(this, WordTypes.PREPOSITION);
 		createWordGroup(this, WordTypes.POSSESSIVE_PRONOUN);
 		createWordGroup(this, WordTypes.PUNCTUATION);
@@ -66,14 +65,14 @@ public class WordListPanel extends DecoratedStackPanel {
 		}
 
 	}
-	
+
 	public void reparseWordLists() {
 		Set<Entry<WordTypes, TextArea>> entrySet = areas.entrySet();
 		for (Entry<WordTypes, TextArea> entry : entrySet) {
 			WordList wordList = currentStyle.getWordsMap().get(entry.getKey());
 			wordList.parse(entry.getValue().getText());
 		}
-		
+
 	}
 
 }

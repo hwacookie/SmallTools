@@ -17,13 +17,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import de.mbaaba.tools.shared.Style;
 
 public class GeneratorPanel extends VerticalPanel {
-	private static final String INTRO_TEXT = "Um Blindtext zu erzeugen, klicke auf 'Go'.\n"
+	private static final String INTRO_TEXT = "Um Blindtext zu erzeugen, klicke auf 'Create!'.\n"
 			+ "Unter 'Themes' im Menü oben kannst du das Thema ändern, dann ändern sich die Wortlisten links. Die Wörter der Wortlisten können jeweils verändert oder erweitert werden. Ausnahme: Theme Hippie.\n"
 			+ "Und ey, keinen unhippiemäßigen Quatsch machen! Die Wortlisten werden nicht lokal sondern auf dem Server für alle Menschenskinder gespeichert. Die anderen wollen ja auch nochmal.\n"
 			+ "\n"
 			+
 
-			"To generate blindtext click 'Go'.\n"
+			"To generate blindtext click 'Create!'.\n"
 			+ "Change a theme in menu on top - the lists of words on the left side will change as well. You can change and add the words of the lists. Exception: Theme Hippie.\n"
 			+ "And, hey, don´t do unhippie shit! The lists of words won´t be saved on your computer but on the server for every human child. Peace.";
 
@@ -31,7 +31,7 @@ public class GeneratorPanel extends VerticalPanel {
 	private TextArea resultTextBox;
 
 	public GeneratorPanel() {
-		setSpacing(5);
+		setSpacing(0);
 		CellPanel parameterArea = createParameterArea();
 		add(parameterArea);
 
@@ -59,15 +59,15 @@ public class GeneratorPanel extends VerticalPanel {
 		lblNewLabel.setWidth("");
 		horzPanel.setCellVerticalAlignment(lblNewLabel, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		final IntegerBox integerBox = new IntegerBox();
-		integerBox.setAlignment(TextAlignment.RIGHT);
-		integerBox.setVisibleLength(4);
-		integerBox.setText("4");
-		integerBox.setWidth("16");
-		horzPanel.add(integerBox);
+		final IntegerBox numParagraphs = new IntegerBox();
+		numParagraphs.setAlignment(TextAlignment.CENTER);
+		numParagraphs.setVisibleLength(4);
+		numParagraphs.setText("4");
+		numParagraphs.setWidth("16");
+		horzPanel.add(numParagraphs);
 
-		horzPanel.setCellVerticalAlignment(integerBox, HasVerticalAlignment.ALIGN_MIDDLE);
-		horzPanel.setCellHorizontalAlignment(integerBox, HasHorizontalAlignment.ALIGN_LEFT);
+		horzPanel.setCellVerticalAlignment(numParagraphs, HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellHorizontalAlignment(numParagraphs, HasHorizontalAlignment.ALIGN_LEFT);
 
 		Label lb2 = new Label("Paragraph length:");
 		horzPanel.add(lb2);
@@ -76,23 +76,24 @@ public class GeneratorPanel extends VerticalPanel {
 		final IntegerBox numSentencesBox = new IntegerBox();
 		numSentencesBox.setAlignment(TextAlignment.CENTER);
 		numSentencesBox.setVisibleLength(4);
-		numSentencesBox.setText("6");
+		numSentencesBox.setText("8");
 		numSentencesBox.setWidth("16");
 		horzPanel.add(numSentencesBox);
 		horzPanel.setCellVerticalAlignment(numSentencesBox, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		horzPanel.setCellVerticalAlignment(integerBox, HasVerticalAlignment.ALIGN_MIDDLE);
-		horzPanel.setCellHorizontalAlignment(integerBox, HasHorizontalAlignment.ALIGN_LEFT);
+		horzPanel.setCellVerticalAlignment(numSentencesBox, HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellHorizontalAlignment(numSentencesBox, HasHorizontalAlignment.ALIGN_LEFT);
 
-		Button btnNewButton = new Button("Go");
+		Button btnNewButton = new Button();
 		btnNewButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				TextGenerator textGenerator = new TextGenerator(currentStyle);
-				String s = textGenerator.createText(integerBox.getValue(), numSentencesBox.getValue());
+				String s = textGenerator.createText(numParagraphs.getValue(), numSentencesBox.getValue());
 				resultTextBox.setText(s);
 			}
 		});
-		btnNewButton.setText("Go!");
+		btnNewButton.setText("Create!");
+		btnNewButton.setWidth("16");
 		horzPanel.add(btnNewButton);
 		horzPanel.setCellVerticalAlignment(btnNewButton, HasVerticalAlignment.ALIGN_MIDDLE);
 		horzPanel.setCellHorizontalAlignment(btnNewButton, HasHorizontalAlignment.ALIGN_RIGHT);

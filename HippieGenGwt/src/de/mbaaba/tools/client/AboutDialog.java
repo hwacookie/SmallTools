@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AboutDialog extends DialogBox {
  
-	private static final String ABOUT_TEXT = "<h2>Hippie-ipsum.</h2>This is a utility for creating arbitrary blind-text which can be used to fill the empty spaces on web-pages during development.<br><br>Created by Hauke Walden, kannweg \"at\" gmx.biz<br><br>Inspired by <a href=\"http://http://www.loremipsum.de/\">Lorem ipsum</a> and <a href=\"http://baconipsum.com\">Bacon ipsum</a> and triggered by Inka Chall who, by the way, writes the <a href=\"http://blickgewinkelt.de\">best german travel-blog</a> ever! :)";
+	private static final String ABOUT_TEXT = "<h2>Hippie-ipsum.</h2>This is a utility for creating arbitrary blind-text which can be used to fill the empty spaces on web-pages during development.<br><br>Created by Hauke Walden, kannweg \"at\" gmx.biz<br><br>Inspired by <a href=\"http://http://www.loremipsum.de/\">Lorem ipsum</a> and <a href=\"http://baconipsum.com\">Bacon ipsum</a> and triggered by Inka Chall who, by the way, writes the <a href=\"http://blickgewinkelt.de\">best german travel-blog</a> ever! :)<br><br>Contact: <a href=\"mailto://hippie.ipsum@gmail.com\">hippie.ipsum@gmail.com</a>";
 
 	public AboutDialog() {
 		final DialogBox box = this;

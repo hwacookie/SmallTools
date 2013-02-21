@@ -23,7 +23,6 @@ public class MainWindow extends Composite {
 	private static final String VERSION_STRING = "0.2";
 	private HippieGen hippieGen;
 	private MenuBar styleMenuBar;
-	private Label lbStyle;
 	private InlineHTML styleDesription;
 	private WordListPanel wordListPanel;
 	private GeneratorPanel generatorPanel;
@@ -117,9 +116,8 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Style aStyle) {
-				lbStyle.setText("Style: " + aStyle.getName());
 				styleDesription.setHTML("<div align=left><h3>" + aStyle.getName() + " - Style" + "</h3></div>&nbsp;&nbsp;"
-						+ aStyle.getName());
+						+ aStyle.getDescription());
 				wordListPanel.setCurrentStyle(aStyle);
 				generatorPanel.setCurrentStyle(aStyle);
 				setCurrentStyle(aStyle);
@@ -152,16 +150,18 @@ public class MainWindow extends Composite {
 		statusPanel.add(lbVersion);
 		statusPanel.setCellVerticalAlignment(lbVersion, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		lbStyle = new Label("Theme: " + "Default");
-		lbStyle.setText("Theme: " + "Default");
-		statusPanel.add(lbStyle);
-		statusPanel.setCellVerticalAlignment(lbStyle, HasVerticalAlignment.ALIGN_MIDDLE);
+		Label lbImpressum = new Label();
+		lbImpressum.setText(" + + + Contact: hippie.ipsum@gmail.com");
+		statusPanel.add(lbImpressum);
+		statusPanel.setCellVerticalAlignment(lbImpressum, HasVerticalAlignment.ALIGN_MIDDLE);
+		statusPanel.setCellHorizontalAlignment(lbImpressum, HasHorizontalAlignment.ALIGN_RIGHT);
+
 		return statusPanel;
 	}
 
 	private Panel createMenuBar() {
 		SimplePanel sp = new SimplePanel();
-		
+
 		MenuBar mainMenu = new MenuBar(false);
 		sp.add(mainMenu);
 
