@@ -12,7 +12,6 @@ public enum WordTypes {
 	POSSESSIVE_PRONOUN("Possessive pronoun"),
 	PUNCTUATION("Punctuation");
 
-
 	private String userName;
 
 	private WordTypes(String aUserName) {

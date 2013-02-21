@@ -11,7 +11,9 @@ import de.mbaaba.tools.shared.Style;
 @RemoteServiceRelativePath("greet")
 public interface GreetingService extends RemoteService {
 	String[] getStyleNames() throws IllegalArgumentException;
+
 	Style getStyle(String aName) throws IllegalArgumentException;
+
 	void saveStyle(Style aStyle) throws IllegalArgumentException;
 
 }

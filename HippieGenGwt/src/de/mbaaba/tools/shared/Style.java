@@ -64,11 +64,11 @@ public class Style implements Serializable {
 		String s = "";
 		List<String> words = wordList.getWords();
 		for (String word : words) {
-			s=s+word+"|";
+			s = s + word + "|";
 		}
-		s=wordList.getWordType().name()+"="+s;
+		s = wordList.getWordType().name() + "=" + s;
 		return s;
-		
+
 	}
 }
 

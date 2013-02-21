@@ -1,8 +1,6 @@
 package de.mbaaba.tools.shared;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DefaultWordLists {
@@ -36,8 +34,8 @@ public class DefaultWordLists {
 		defaultStyle = new Style("Default", "<h3>Default theme</h3>", hippieDefaults);
 	}
 
-//
-//	public static String getByType(WordTypes aType) {
-//		return hippieDefaults.get(aType);
-//	}
+	//
+	// public static String getByType(WordTypes aType) {
+	// return hippieDefaults.get(aType);
+	// }
 }
