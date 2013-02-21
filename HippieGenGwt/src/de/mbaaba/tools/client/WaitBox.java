@@ -14,11 +14,8 @@ public class WaitBox extends DialogBox {
 		box.setText(header);
 		panel.add(new Label(content));
 		// few empty labels to make widget larger
-		final Label emptyLabel = new Label("");
-		emptyLabel.setSize("auto", "25px");
-		panel.add(emptyLabel);
-		panel.add(emptyLabel);
 		box.add(panel);
+		panel.setSize("100%", "100%");
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;

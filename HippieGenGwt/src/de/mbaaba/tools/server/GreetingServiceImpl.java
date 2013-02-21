@@ -3,8 +3,6 @@ package de.mbaaba.tools.server;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -12,7 +10,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.gwt.user.client.Random;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.mbaaba.tools.client.GreetingService;
@@ -65,7 +62,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 	
 	// ------------------------------------------------------------------------------
 
-	private java.util.Random random = new java.util.Random();
+	//private java.util.Random random = new java.util.Random();
 
 	private String loadList(String aTheme, WordTypes aWordType) throws IllegalArgumentException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -96,12 +93,12 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 	}
 
 	private void fakeASlowDB() {
-		try {
-			Thread.sleep(random.nextInt(5000) + 250);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(random.nextInt(5000) + 250);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	private String getStyleDescription(String aStyleName) throws IllegalArgumentException {
@@ -112,7 +109,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 			String description = (String) greeting.getProperty("content");
 			return description;
 		} catch (EntityNotFoundException e) {
-			throw new IllegalArgumentException("No description found for " + aStyleName);
+			return aStyleName;
+//			throw new IllegalArgumentException("No description found for " + aStyleName);
 		}
 	}
 

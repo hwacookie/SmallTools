@@ -17,15 +17,36 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import de.mbaaba.tools.shared.Style;
 
 public class GeneratorPanel extends VerticalPanel {
+	private static final String INTRO_TEXT = "Um Blindtext zu erzeugen, klicke auf 'Go'.\n"
+			+ "Unter 'Themes' im Menü oben kannst du das Thema ändern, dann ändern sich die Wortlisten links. Die Wörter der Wortlisten können jeweils verändert oder erweitert werden. Ausnahme: Theme Hippie.\n"
+			+ "Und ey, keinen unhippiemäßigen Quatsch machen! Die Wortlisten werden nicht lokal sondern auf dem Server für alle Menschenskinder gespeichert. Die anderen wollen ja auch nochmal.\n"
+			+ "\n"
+			+
+
+			"To generate blindtext click 'Go'.\n"
+			+ "Change a theme in menu on top - the lists of words on the left side will change as well. You can change and add the words of the lists. Exception: Theme Hippie.\n"
+			+ "And, hey, don´t do unhippie shit! The lists of words won´t be saved on your computer but on the server for every human child. Peace.";
+
 	protected Style currentStyle;
 	private TextArea resultTextBox;
 
 	public GeneratorPanel() {
+		setSpacing(5);
 		CellPanel parameterArea = createParameterArea();
 		add(parameterArea);
 
-		SimplePanel outputArea = createOutputPanel();
-		add(outputArea);
+		SimplePanel simplePanel = new SimplePanel();
+		add(simplePanel);
+		simplePanel.setSize("100%", "100%");
+		setCellHeight(simplePanel, "100%");
+
+		resultTextBox = new TextArea();
+		simplePanel.setWidget(resultTextBox);
+		setCellHeight(resultTextBox, "100%");
+		setCellWidth(resultTextBox, "100%");
+		resultTextBox.setText(INTRO_TEXT);
+		resultTextBox.setStyleName("gwt-DialogBox");
+		resultTextBox.setSize("441px", "100%");
 	}
 
 	private CellPanel createParameterArea() {
@@ -35,14 +56,14 @@ public class GeneratorPanel extends VerticalPanel {
 
 		Label lblNewLabel = new Label("Number of paragraphs:");
 		horzPanel.add(lblNewLabel);
-		lblNewLabel.setWidth("135px");
+		lblNewLabel.setWidth("");
 		horzPanel.setCellVerticalAlignment(lblNewLabel, HasVerticalAlignment.ALIGN_MIDDLE);
 
 		final IntegerBox integerBox = new IntegerBox();
 		integerBox.setAlignment(TextAlignment.RIGHT);
 		integerBox.setVisibleLength(4);
 		integerBox.setText("4");
-		integerBox.setWidth("35%");
+		integerBox.setWidth("16");
 		horzPanel.add(integerBox);
 
 		horzPanel.setCellVerticalAlignment(integerBox, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -56,7 +77,7 @@ public class GeneratorPanel extends VerticalPanel {
 		numSentencesBox.setAlignment(TextAlignment.CENTER);
 		numSentencesBox.setVisibleLength(4);
 		numSentencesBox.setText("6");
-		numSentencesBox.setWidth("43px");
+		numSentencesBox.setWidth("16");
 		horzPanel.add(numSentencesBox);
 		horzPanel.setCellVerticalAlignment(numSentencesBox, HasVerticalAlignment.ALIGN_MIDDLE);
 
@@ -78,23 +99,6 @@ public class GeneratorPanel extends VerticalPanel {
 
 		return horzPanel;
 
-	}
-
-	private SimplePanel createOutputPanel() {
-		SimplePanel simplePanel = new SimplePanel();
-		simplePanel.setSize("100%", "100%");
-
-		resultTextBox = new TextArea();
-		resultTextBox.setVisibleLines(10);
-		resultTextBox.setAlignment(TextAlignment.CENTER);
-		resultTextBox
-				.setText("Dies ist ein Testtext. Klicken Sie auf \"Go\" um Blindtext zu erzeugen. Auf der linken Seite können die Listen mit den verwendeten Wörtern verändert bzw. erweitert werden.");
-		resultTextBox.setStyleName("gwt-DialogBox");
-		resultTextBox.setTextAlignment(TextArea.ALIGN_LEFT);
-		simplePanel.setWidget(resultTextBox);
-		resultTextBox.setSize("100%", "100%");
-
-		return simplePanel;
 	}
 
 	public void setCurrentStyle(Style aStyle) {
