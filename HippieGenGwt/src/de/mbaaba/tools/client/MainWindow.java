@@ -78,8 +78,8 @@ public class MainWindow extends Composite {
 
 		CellPanel centerPanel = createCenterPanel();
 		dockPanel.add(centerPanel, DockPanel.CENTER);
-		dockPanel.setCellHeight(centerPanel, "100%");
-		dockPanel.setCellWidth(centerPanel, "100%");
+//		dockPanel.setCellHeight(centerPanel, "100%");
+//		dockPanel.setCellWidth(centerPanel, "100%");
 
 		CellPanel statusPanel = createStatusBar();
 		dockPanel.add(statusPanel, DockPanel.SOUTH);
@@ -118,8 +118,6 @@ public class MainWindow extends Composite {
 				styleDesription.setHTML("<div align=left><h3>"
 						+ aStyle.getName() + " - Style"
 						+ "</h3></div>&nbsp;&nbsp;" + aStyle.getName());
-				wordListPanel.setCurrentStyle(aStyle);
-				generatorPanel.setCurrentStyle(aStyle);
 				setCurrentStyle(aStyle);
 				box.hide();
 			}
@@ -138,8 +136,8 @@ public class MainWindow extends Composite {
 
 	protected void setCurrentStyle(Style aStyle) {
 		currentStyle = aStyle;
-		wordListPanel.setCurrentStyle(aStyle);
-		generatorPanel.setCurrentStyle(aStyle);
+		wordListPanel.setCurrentStyle(currentStyle);
+		generatorPanel.setCurrentStyle(currentStyle);
 	}
 
 	private CellPanel createStatusBar() {
@@ -174,24 +172,24 @@ public class MainWindow extends Composite {
 	private CellPanel createCenterPanel() {
 		HorizontalPanel centerPanel = new HorizontalPanel();
 		centerPanel.setSpacing(5);
-		centerPanel.setSize("814px", "576px");
+//		centerPanel.setSize("814px", "576px");
 
 		wordListPanel = new WordListPanel();
 		wordListPanel.setStyleName("gwt-StackPanel");
 		wordListPanel.setSize("30%", "100%");
 
-		centerPanel.setCellHeight(wordListPanel, "100%");
-		centerPanel.setCellWidth(wordListPanel, "300");
+//		centerPanel.setCellHeight(wordListPanel, "100%");
+//		centerPanel.setCellWidth(wordListPanel, "300");
 		centerPanel.add(wordListPanel);
 
 		generatorPanel = new GeneratorPanel();
 		centerPanel.add(generatorPanel);
 		generatorPanel.setWidth("526px");
-		generatorPanel.setBorderWidth(0);
+//		generatorPanel.setBorderWidth(0);
 		generatorPanel.setHeight("100%");
 
-		centerPanel.setCellHeight(generatorPanel, "100%");
-		centerPanel.setCellWidth(generatorPanel, "100%");
+//		centerPanel.setCellHeight(generatorPanel, "100%");
+//		centerPanel.setCellWidth(generatorPanel, "100%");
 
 		return centerPanel;
 

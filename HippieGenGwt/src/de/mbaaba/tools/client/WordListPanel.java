@@ -57,8 +57,8 @@ public class WordListPanel extends DecoratedStackPanel {
 		for (TextArea textArea : textAreas) {
 			textArea.setText("");
 		}
-		if (aStyle != null) {
-			Set<Entry<WordTypes, WordList>> entrySet = aStyle.getWordsMap().entrySet();
+		if (currentStyle != null) {
+			Set<Entry<WordTypes, WordList>> entrySet = currentStyle.getWordsMap().entrySet();
 			for (Entry<WordTypes, WordList> entry : entrySet) {
 				TextArea textArea = areas.get(entry.getKey());
 				textArea.setText(entry.getValue().buildString());
