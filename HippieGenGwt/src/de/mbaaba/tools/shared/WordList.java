@@ -69,5 +69,7 @@ public class WordList implements Serializable {
 			addWord(string.trim());
 		}
 	}
+	
+	
 
 }

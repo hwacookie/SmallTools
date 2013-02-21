@@ -228,6 +228,19 @@ public class MainWindow extends Composite {
 		});
 
 		menuBar.addItem(miSave);
+		
+		MenuItem miExport = new MenuItem("Export", false, new Command() {
+
+			@Override
+			public void execute() {
+				currentStyle.export();
+			}
+		});
+
+		menuBar.addItem(miExport);
+		
+		
+		
 
 		return menuItem;
 	}
