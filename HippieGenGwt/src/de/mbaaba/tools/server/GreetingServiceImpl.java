@@ -58,10 +58,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 			putToDatastore(datastore, entity);
 		}
 	}
-
+	
+	
 	// ------------------------------------------------------------------------------
 
-	// private java.util.Random random = new java.util.Random();
+	//private java.util.Random random = new java.util.Random();
 
 	private String loadList(String aTheme, WordTypes aWordType) throws IllegalArgumentException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -92,12 +93,12 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 	}
 
 	private void fakeASlowDB() {
-		// try {
-		// Thread.sleep(random.nextInt(5000) + 250);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+//		try {
+//			Thread.sleep(random.nextInt(5000) + 250);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	private String getStyleDescription(String aStyleName) throws IllegalArgumentException {
@@ -109,8 +110,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 			return description;
 		} catch (EntityNotFoundException e) {
 			return aStyleName;
-			// throw new IllegalArgumentException("No description found for " +
-			// aStyleName);
+//			throw new IllegalArgumentException("No description found for " + aStyleName);
 		}
 	}
 

@@ -217,7 +217,7 @@ public class MainWindow extends Composite {
 		styleMenuBar = new MenuBar(true);
 		styleMenuBar.setAutoOpen(false);
 
-		menuBar.addItem("Select", styleMenuBar);
+		MenuItem addItem = menuBar.addItem("Select", styleMenuBar);
 
 		MenuItem miSave = new MenuItem("Save", false, new Command() {
 
@@ -228,7 +228,7 @@ public class MainWindow extends Composite {
 		});
 
 		menuBar.addItem(miSave);
-
+		
 		MenuItem miExport = new MenuItem("Export", false, new Command() {
 
 			@Override
@@ -238,6 +238,9 @@ public class MainWindow extends Composite {
 		});
 
 		menuBar.addItem(miExport);
+		
+		
+		
 
 		return menuItem;
 	}

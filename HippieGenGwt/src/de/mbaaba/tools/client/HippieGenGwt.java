@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class HippieGenGwt implements EntryPoint {
 
+
+
 	/**
 	 * This is the entry point method.
 	 */

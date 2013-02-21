@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AboutDialog extends DialogBox {
-
+ 
 	private static final String ABOUT_TEXT = "<h2>Hippie-ipsum.</h2>This is a utility for creating arbitrary blind-text which can be used to fill the empty spaces on web-pages during development.<br><br>Created by Hauke Walden, kannweg \"at\" gmx.biz<br><br>Inspired by <a href=\"http://http://www.loremipsum.de/\">Lorem ipsum</a> and <a href=\"http://baconipsum.com\">Bacon ipsum</a> and triggered by Inka Chall who, by the way, writes the <a href=\"http://blickgewinkelt.de\">best german travel-blog</a> ever! :)<br><br>Contact: <a href=\"mailto://hippie.ipsum@gmail.com\">hippie.ipsum@gmail.com</a>";
 
 	public AboutDialog() {
@@ -26,13 +26,16 @@ public class AboutDialog extends DialogBox {
 
 		Image image = new Image("ProgramIcon.jpg");
 		horizontalPanel.add(image);
-		horizontalPanel.setCellVerticalAlignment(image, HasVerticalAlignment.ALIGN_MIDDLE);
+		horizontalPanel.setCellVerticalAlignment(image,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.setSpacing(5);
 		horizontalPanel.add(verticalPanel);
-		horizontalPanel.setCellVerticalAlignment(verticalPanel, HasVerticalAlignment.ALIGN_BOTTOM);
-		horizontalPanel.setCellHorizontalAlignment(verticalPanel, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel.setCellVerticalAlignment(verticalPanel,
+				HasVerticalAlignment.ALIGN_BOTTOM);
+		horizontalPanel.setCellHorizontalAlignment(verticalPanel,
+				HasHorizontalAlignment.ALIGN_CENTER);
 
 		InlineHTML html = new InlineHTML();
 		html.setHTML(ABOUT_TEXT);
@@ -46,7 +49,8 @@ public class AboutDialog extends DialogBox {
 			}
 		});
 		btnOk.setWidth("90px");
-		verticalPanel.setCellHorizontalAlignment(btnOk, HasHorizontalAlignment.ALIGN_RIGHT);
+		verticalPanel.setCellHorizontalAlignment(btnOk,
+				HasHorizontalAlignment.ALIGN_RIGHT);
 		verticalPanel.add(btnOk);
 
 		box.add(horizontalPanel);

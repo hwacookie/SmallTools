@@ -31,7 +31,8 @@ public class HippieGen {
 		// });
 	}
 
-	public void loadStyle(final String aStyleName, final TypedListener<Style> aListener) {
+	public void loadStyle(final String aStyleName,
+			final TypedListener<Style> aListener) {
 		AsyncCallback<Style> callback = new AsyncCallback<Style>() {
 
 			@Override
