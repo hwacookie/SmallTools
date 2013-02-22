@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.TextArea;
 
@@ -47,6 +51,15 @@ public class WordListPanel extends DecoratedStackPanel {
 		wordListStackPanel.add(txtArea, aWordType.toString(), false);
 		txtArea.setSize("300px\r\n", "300px");
 		txtArea.setText("");
+		txtArea.addBlurHandler(new BlurHandler() {
+			
+			@Override
+			public void onBlur(BlurEvent event) {
+				// automatically reparse word list when textArea looses focus
+				WordList wordList = currentStyle.getWordsMap().get(aWordType);
+				wordList.parse(txtArea.getText());
+			}
+		});
 		areas.put(aWordType, txtArea);
 	}
 

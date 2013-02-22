@@ -137,9 +137,6 @@ public class TextGenerator {
 		}
 	}
 
-	// private void setAvailableStyles(String[] availableStyles) {
-	// this.availableStyles = availableStyles;
-	// }
 
 	public Style getCurrentStyle() {
 		if (currentStyle == null) {

@@ -25,7 +25,7 @@ public class MainWindow extends Composite {
 	private MenuBar styleMenuBar;
 	private InlineHTML styleDesription;
 	private WordListPanel wordListPanel;
-	private GeneratorPanel generatorPanel;
+	private TextGeneratorPanel generatorPanel;
 	private Style currentStyle;
 
 	public MainWindow() {
@@ -181,7 +181,7 @@ public class MainWindow extends Composite {
 		wordListPanel.setStyleName("gwt-StackPanel");
 		wordListPanel.setSize("30%", "100%");
 
-		generatorPanel = new GeneratorPanel();
+		generatorPanel = new TextGeneratorPanel();
 		generatorPanel.setBorderWidth(0);
 		generatorPanel.setSize("70%", "100%");
 
