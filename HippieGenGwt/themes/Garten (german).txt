@@ -1,7 +1,7 @@
 name=Garden
 description=Garden
 NUMBER_SINGULAR=eine|ein|manch|der|die|das|
-NOUN_SINGULAR=Baum|Blume|Gras|Rasen|Rübe|Stängel|Halm|Busch|Hecke|
+NOUN_SINGULAR=Baum|Blume|Gras|Rasen|Rübe|Stängel|Halm|Busch|Hecke|Strauch
 VERB_SINGULAR=wächst|gedeiht|blüht|rankt|schimmelt|
 NUMBER_PLURAL=viele|manche|tausend|mehrere|dutzende|die|
 NOUN_PLURAL=Bäume|Blumen|Gräser|Rasen|Rüben|Stängel|Halme|Büsche|Hecken|
