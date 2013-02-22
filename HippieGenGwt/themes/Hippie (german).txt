@@ -1,0 +1,12 @@
+name=Hippie (german)
+description=<h1>Hippie-Theme</h>The theme that got the whole thing started. Created by Inka Chall.
+NUMBER_SINGULAR=der|die|das|dem|seiner|ihrer|meiner|deiner|unserer|seine|ihre|meine|deine|unsere|
+NOUN_SINGULAR=Hippie|Joint|Tüte|Kiffer|Blume|Gras|Polizist|Protest|Softie|Gitarrist|
+VERB_SINGULAR=raucht|vögelt|kifft|liebt|schläft|protestiert|träumt|fühlt|denkt|isst|trinkt|demonstriert|streikt|schnarcht|küsst|
+NUMBER_PLURAL=viele|manche|tausend|mehrere|dutzende|die|
+NOUN_PLURAL=Hippies|Joints|Tüten|Kiffer|Blumen|Polizisten|
+VERB_PLURAL=rauchen|vögeln|kiffen|lieben|schlafen|protestieren|träumen|fühlen|denken|essen|trinken|
+ATTRIBUTES=orange|blumige|freie|singende|lachende|weinende|nachdenkliche|grübelnde|tanzende|
+PREPOSITION=in|an|zu|bei|auf|neben|unter|am|von|im|
+POSSESSIVE_PRONOUN=eine|ein|manch|der|die|das|
+PUNCTUATION=.|.|.|.|!|?|:|,|,|,|,|,|;|:|

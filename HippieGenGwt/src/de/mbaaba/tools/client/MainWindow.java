@@ -3,7 +3,6 @@ package de.mbaaba.tools.client;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -14,18 +13,21 @@ import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
+import de.mbaaba.tools.client.StyleEvent.StyleAction;
 import de.mbaaba.tools.shared.Style;
 
 public class MainWindow extends Composite {
 
-	private static final String VERSION_STRING = "0.1";
+	private static final String VERSION_STRING = "0.2a";
+	private static final String DEFAULT_THEME = "Hippie";
 	private HippieGen hippieGen;
 	private MenuBar styleMenuBar;
-	private Label lbStyle;
 	private InlineHTML styleDesription;
 	private WordListPanel wordListPanel;
-	private GeneratorPanel generatorPanel;
+	private TextGeneratorPanel generatorPanel;
 	private Style currentStyle;
 
 	public MainWindow() {
@@ -35,8 +37,28 @@ public class MainWindow extends Composite {
 		 * service.
 		 */
 
+		StyleManager.getInstance().addListener(new TypedListener<StyleEvent>() {
+
+			@Override
+			public void notifyMe(StyleEvent aResult) {
+				switch (aResult.action) {
+				case CHANGED:
+					currentStyle = aResult.style;
+				default:
+					break;
+				}
+			}
+
+			@Override
+			public void notifyFail(Throwable aCaught) {
+			}
+		});
+
 		hippieGen = new HippieGen();
 
+		final WaitBox box = new WaitBox("Please Wait", "Loading styles, please wait ...");
+		box.show();
+		
 		final Timer timer = new Timer() {
 
 			@Override
@@ -48,6 +70,8 @@ public class MainWindow extends Composite {
 						String[] availableStyles = aStyleNames;
 						if (availableStyles.length > 0) {
 							setStyles(availableStyles);
+							box.hide();
+							loadStyle(DEFAULT_THEME);
 						} else {
 							schedule(1000);
 						}
@@ -64,48 +88,53 @@ public class MainWindow extends Composite {
 		timer.schedule(1000);
 
 		DockPanel dockPanel = new DockPanel();
+		dockPanel.setBorderWidth(0);
 		initWidget(dockPanel);
-		dockPanel.setSize("800", "100%");
+
+		dockPanel.setHeight("100%");
+		dockPanel.setWidth("165px");
 
 		Image image = new Image("HippieIpsum.png");
 		dockPanel.add(image, DockPanel.WEST);
 
-		MenuBar createMenuBar = createMenuBar(dockPanel);
-		dockPanel.add(createMenuBar, DockPanel.NORTH);
+		Panel menuBar = createMenuBar();
+		dockPanel.add(menuBar, DockPanel.NORTH);
 
-		CellPanel themeInfoPanel = createThemeInfoPanel();
+		Panel themeInfoPanel = createThemeInfoPanel();
 		dockPanel.add(themeInfoPanel, DockPanel.NORTH);
 
-		CellPanel centerPanel = createCenterPanel();
+		Panel centerPanel = createCenterPanel();
 		dockPanel.add(centerPanel, DockPanel.CENTER);
-//		dockPanel.setCellHeight(centerPanel, "100%");
-//		dockPanel.setCellWidth(centerPanel, "100%");
+		dockPanel.setCellHeight(centerPanel, "100%");
+		dockPanel.setCellWidth(centerPanel, "100%");
 
-		CellPanel statusPanel = createStatusBar();
+		Panel statusPanel = createStatusBar();
 		dockPanel.add(statusPanel, DockPanel.SOUTH);
 		dockPanel.setCellVerticalAlignment(statusPanel,
 				HasVerticalAlignment.ALIGN_BOTTOM);
 		dockPanel.setCellHorizontalAlignment(statusPanel,
-				HasHorizontalAlignment.ALIGN_RIGHT);
+				HasHorizontalAlignment.ALIGN_LEFT);
 	}
 
 	protected void setStyles(String[] availableThemes) {
 		for (final String string : availableThemes) {
-			styleMenuBar.addItem(new MenuItem(string, new ScheduledCommand() {
+			if (styleMenuBar != null) {
+				styleMenuBar.addItem(new MenuItem(string,
+						new ScheduledCommand() {
 
-				@Override
-				public void execute() {
-					loadStyle(string);
-				}
-			}));
+							@Override
+							public void execute() {
+								loadStyle(string);
+							}
+						}));
+			}
 		}
+		
+		
 	}
 
 	protected void loadStyle(String aStyleName) {
 
-		// clear old lists
-		wordListPanel.setCurrentStyle(null);
-		generatorPanel.setCurrentStyle(null);
 		final WaitBox box = new WaitBox("Please Wait", "Loading style \""
 				+ aStyleName + "\", please wait ...");
 		box.show();
@@ -114,11 +143,11 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Style aStyle) {
-				lbStyle.setText("Style: " + aStyle.getName());
 				styleDesription.setHTML("<div align=left><h3>"
 						+ aStyle.getName() + " - Style"
-						+ "</h3></div>&nbsp;&nbsp;" + aStyle.getName());
-				setCurrentStyle(aStyle);
+						+ "</h3></div>&nbsp;&nbsp;" + aStyle.getDescription());
+				StyleManager.getInstance().notifyChange(
+						new StyleEvent(aStyle, StyleAction.CHANGED));
 				box.hide();
 			}
 
@@ -134,13 +163,7 @@ public class MainWindow extends Composite {
 		hippieGen.loadStyle(aStyleName, listener);
 	}
 
-	protected void setCurrentStyle(Style aStyle) {
-		currentStyle = aStyle;
-		wordListPanel.setCurrentStyle(currentStyle);
-		generatorPanel.setCurrentStyle(currentStyle);
-	}
-
-	private CellPanel createStatusBar() {
+	private Panel createStatusBar() {
 		HorizontalPanel statusPanel = new HorizontalPanel();
 		statusPanel.setSpacing(5);
 		statusPanel.setHeight("20");
@@ -150,52 +173,56 @@ public class MainWindow extends Composite {
 		statusPanel.setCellVerticalAlignment(lbVersion,
 				HasVerticalAlignment.ALIGN_MIDDLE);
 
-		lbStyle = new Label("Theme: " + "Default");
-		lbStyle.setText("Theme: " + "Default");
-		statusPanel.add(lbStyle);
-		statusPanel.setCellVerticalAlignment(lbStyle,
+		Label lbImpressum = new Label();
+		lbImpressum.setText(" + + + Contact: hippie.ipsum@gmail.com");
+		statusPanel.add(lbImpressum);
+		statusPanel.setCellVerticalAlignment(lbImpressum,
 				HasVerticalAlignment.ALIGN_MIDDLE);
+		statusPanel.setCellHorizontalAlignment(lbImpressum,
+				HasHorizontalAlignment.ALIGN_RIGHT);
+
 		return statusPanel;
 	}
 
-	private MenuBar createMenuBar(DockPanel vPanel) {
+	private Panel createMenuBar() {
+		SimplePanel sp = new SimplePanel();
+
 		MenuBar mainMenu = new MenuBar(false);
+		sp.add(mainMenu);
 
 		MenuItem miThemes = createThemesMenu();
 		mainMenu.addItem(miThemes);
 
 		MenuItem miHelp = createHelpMenu();
 		mainMenu.addItem(miHelp);
-		return mainMenu;
+		return sp;
 	}
 
-	private CellPanel createCenterPanel() {
+	private Panel createCenterPanel() {
 		HorizontalPanel centerPanel = new HorizontalPanel();
-		centerPanel.setSpacing(5);
-//		centerPanel.setSize("814px", "576px");
+		centerPanel.setSize("800px", "576px");
 
 		wordListPanel = new WordListPanel();
 		wordListPanel.setStyleName("gwt-StackPanel");
 		wordListPanel.setSize("30%", "100%");
 
-//		centerPanel.setCellHeight(wordListPanel, "100%");
-//		centerPanel.setCellWidth(wordListPanel, "300");
+		generatorPanel = new TextGeneratorPanel();
+		generatorPanel.setBorderWidth(0);
+		generatorPanel.setSize("70%", "100%");
+
+		centerPanel.setCellHeight(wordListPanel, "100%");
+		centerPanel.setCellWidth(wordListPanel, "300");
 		centerPanel.add(wordListPanel);
 
-		generatorPanel = new GeneratorPanel();
+		centerPanel.setCellHeight(generatorPanel, "100%");
+		centerPanel.setCellWidth(generatorPanel, "100%");
 		centerPanel.add(generatorPanel);
-		generatorPanel.setWidth("526px");
-//		generatorPanel.setBorderWidth(0);
-		generatorPanel.setHeight("100%");
-
-//		centerPanel.setCellHeight(generatorPanel, "100%");
-//		centerPanel.setCellWidth(generatorPanel, "100%");
 
 		return centerPanel;
 
 	}
 
-	private CellPanel createThemeInfoPanel() {
+	private Panel createThemeInfoPanel() {
 		HorizontalPanel themeInfoPanel = new HorizontalPanel();
 		themeInfoPanel.setSpacing(5);
 		themeInfoPanel.setSize("100%", "85px");
@@ -209,9 +236,14 @@ public class MainWindow extends Composite {
 
 	private MenuItem createThemesMenu() {
 		MenuBar menuBar = new MenuBar(true);
+		menuBar.setAutoOpen(true);
 		MenuItem menuItem = new MenuItem("Themes", false, menuBar);
+
 		styleMenuBar = new MenuBar(true);
+		styleMenuBar.setAutoOpen(false);
+
 		menuBar.addItem("Select", styleMenuBar);
+
 		MenuItem miSave = new MenuItem("Save", false, new Command() {
 
 			@Override
@@ -221,6 +253,18 @@ public class MainWindow extends Composite {
 		});
 
 		menuBar.addItem(miSave);
+
+		MenuItem miExport = new MenuItem("Export", false, new Command() {
+
+			@Override
+			public void execute() {
+				ImportExportDialog importExportDialog = new ImportExportDialog(
+						currentStyle);
+				importExportDialog.show();
+			}
+		});
+
+		menuBar.addItem(miExport);
 
 		return menuItem;
 	}
@@ -247,6 +291,8 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Boolean aSuccess) {
+				StyleManager.getInstance().notifyChange(
+						new StyleEvent(currentStyle, StyleAction.SAVED));
 				box.hide();
 			}
 
@@ -254,11 +300,12 @@ public class MainWindow extends Composite {
 			public void notifyFail(Throwable aCaught) {
 				box.hide();
 				AlertBox alertBox = new AlertBox("Error",
-						"Could not save style: " + aCaught.getMessage());
+						"Could not save theme: " + aCaught.getMessage());
 				alertBox.show();
 			}
 		};
 		hippieGen.saveStyle(currentStyle, listener);
+
 	}
 
 }

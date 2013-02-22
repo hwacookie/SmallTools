@@ -1,20 +1,23 @@
 package de.mbaaba.tools.shared;
 
 public enum WordTypes {
-	PUNCTUATION("Punctuation"), POSSESSIVE_PRONOUN("Possessive pronoun"), PREPOSITION(
-			"Preposition"), ATTRIBUTE_OF_OBJECT("Attribute of object"), VERB_PLURAL(
-			"Verb (plural)"), NOUN_PLURAL("Substantiv (plural)"), ATTRIBUTE_OF_SUBJECT_PLURAL(
-			"Attribute of subject (plural)"), NUMBER_PLURAL("Number (plural)"), VERB_SINGULAR(
-			"Verb (singular)"), NOUN_SINGULAR("Substantiv (singular)"), ATTRIBUTE_OF_SUBJECT_SINGULAR(
-			"Attribute of subject (singular)"), NUMBER_SINGULAR(
-			"Number (singular)");
+	NUMBER_SINGULAR("Articles and numerals (singular)"),
+	NOUN_SINGULAR("Noun (singular)"),
+	VERB_SINGULAR("Verb (singular)"),
+	NUMBER_PLURAL("Articles and numerals (plural)"),
+	NOUN_PLURAL("Nouns (plural)"),
+	VERB_PLURAL("Verb (plural)"),
+	ATTRIBUTES("Attributes"),
+	PREPOSITION("Preposition"),
+	POSSESSIVE_PRONOUN("Possessive pronoun"),
+	PUNCTUATION("Punctuation");
 
 	private String userName;
 
 	private WordTypes(String aUserName) {
 		userName = aUserName;
 	}
-	
+
 	@Override
 	public String toString() {
 		return userName;

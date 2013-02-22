@@ -2,6 +2,7 @@ package de.mbaaba.tools.shared;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Style implements Serializable {
@@ -12,7 +13,7 @@ public class Style implements Serializable {
 	private Map<WordTypes, WordList> wordsMap;
 
 	public Style() {
-		this("","",new HashMap<WordTypes, WordList>());
+		this("", "", new HashMap<WordTypes, WordList>());
 	}
 
 	public Style(String aName, String aDescription, Map<WordTypes, WordList> map) {
@@ -41,17 +42,36 @@ public class Style implements Serializable {
 		this.name = name;
 	}
 
-	
-	
+	public String exportToText() {
+		String s = "";
+		s = s + "name=" + name + "\n";
+		s = s + "description=" + description + "\n";
+
+		s = s + printList(wordsMap.get(WordTypes.NUMBER_SINGULAR)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.NOUN_SINGULAR)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.VERB_SINGULAR)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.NUMBER_PLURAL)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.NOUN_PLURAL)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.VERB_PLURAL)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.ATTRIBUTES)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.PREPOSITION)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.POSSESSIVE_PRONOUN)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.PUNCTUATION)) + "\n";
+		return s;
+
+	}
+
+	private String printList(WordList wordList) {
+		String s = "";
+		List<String> words = wordList.getWords();
+		for (String word : words) {
+			s = s + word + "|";
+		}
+		s = wordList.getWordType().name() + "=" + s;
+		return s;
+
+	}
+
+	public void importFromText(String text) {
+	}
 }
-
-
-// private List<Listener> listeners = new ArrayList<Listener>();
-//
-// public void addLoadCompleteListener(Listener aListener) {
-// listeners.add(aListener);
-// }
-//
-// public void removeLoadListener(Listener aListener) {
-// listeners.remove(aListener);
-// }

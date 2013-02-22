@@ -1,5 +1,28 @@
 /** Add css rules here for your application. */
 
+<!--
+ html body {
+    background-color: #e6d4ca;
+}
+
+textarea.gwt-DialogBox {
+    background-color: #fcfcf2;
+    border-style: inset;
+}
+
+textarea.gwt-TextArea {
+    background-color: #fcfcf2;
+    border-style: none;
+}
+
+tr td input {
+    background-color: #fcfcf2;
+}
+
+td.gwt-StackPanelContent {
+    background-color: #fcfcf2;
+}
+-->
 
 
 /** Example rules used by the template application (remove for your app) */
@@ -10,6 +33,8 @@ h1 {
 	font-weight: bold;
 	text-align: center;
 }
+
+
 
 .sendButton {
   display: block;
@@ -51,4 +76,9 @@ h1 {
 	font-size: 2em;
 	font-weight: bold;
 	text-align: center;
+}
+horz.element {
+	float: left;
+}
+horz.element-new {
 }

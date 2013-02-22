@@ -1,0 +1,12 @@
+name=Hippie (english)
+description=<h1>Hippie-Theme</h>The english version of the theme that got the whole thing started. Created by Inka Chall.
+NUMBER_SINGULAR=A|One|The|No|
+NOUN_SINGULAR=police man|hippie|dealer|joint|motorcycle|car|bus|
+VERB_SINGULAR=smokes|kisses|runs|drinks|
+NUMBER_PLURAL=some|a few|a lot of|many|
+NOUN_PLURAL=hippies|joints|flowers|police-men|soldiers|
+VERB_PLURAL=smoke|drink|run|go|wait|stand|drive|
+ATTRIBUTES=smoking|kissing|running|drinking|
+PREPOSITION=before|after|under|over|next to|close to|right after|
+POSSESSIVE_PRONOUN=the|my|your|
+PUNCTUATION=.|.|.|.|!|?|,|,|,|,|,|:|,|;|:|

@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AlertBox extends DialogBox {
 	public AlertBox(final String header, final String content) {
-		super(); 
+		super();
 		final DialogBox box = this;
 		final VerticalPanel panel = new VerticalPanel();
 		box.setText(header);
