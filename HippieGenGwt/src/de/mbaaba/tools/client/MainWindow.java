@@ -16,11 +16,13 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
+import de.mbaaba.tools.client.StyleEvent.StyleAction;
 import de.mbaaba.tools.shared.Style;
 
 public class MainWindow extends Composite {
 
-	private static final String VERSION_STRING = "0.2";
+	private static final String VERSION_STRING = "0.2a";
+	private static final String DEFAULT_THEME = "Hippie";
 	private HippieGen hippieGen;
 	private MenuBar styleMenuBar;
 	private InlineHTML styleDesription;
@@ -35,8 +37,28 @@ public class MainWindow extends Composite {
 		 * service.
 		 */
 
+		StyleManager.getInstance().addListener(new TypedListener<StyleEvent>() {
+
+			@Override
+			public void notifyMe(StyleEvent aResult) {
+				switch (aResult.action) {
+				case CHANGED:
+					currentStyle = aResult.style;
+				default:
+					break;
+				}
+			}
+
+			@Override
+			public void notifyFail(Throwable aCaught) {
+			}
+		});
+
 		hippieGen = new HippieGen();
 
+		final WaitBox box = new WaitBox("Please Wait", "Loading styles, please wait ...");
+		box.show();
+		
 		final Timer timer = new Timer() {
 
 			@Override
@@ -48,6 +70,8 @@ public class MainWindow extends Composite {
 						String[] availableStyles = aStyleNames;
 						if (availableStyles.length > 0) {
 							setStyles(availableStyles);
+							box.hide();
+							loadStyle(DEFAULT_THEME);
 						} else {
 							schedule(1000);
 						}
@@ -86,59 +110,57 @@ public class MainWindow extends Composite {
 
 		Panel statusPanel = createStatusBar();
 		dockPanel.add(statusPanel, DockPanel.SOUTH);
-		dockPanel.setCellVerticalAlignment(statusPanel, HasVerticalAlignment.ALIGN_BOTTOM);
-		dockPanel.setCellHorizontalAlignment(statusPanel, HasHorizontalAlignment.ALIGN_LEFT);
+		dockPanel.setCellVerticalAlignment(statusPanel,
+				HasVerticalAlignment.ALIGN_BOTTOM);
+		dockPanel.setCellHorizontalAlignment(statusPanel,
+				HasHorizontalAlignment.ALIGN_LEFT);
 	}
 
 	protected void setStyles(String[] availableThemes) {
 		for (final String string : availableThemes) {
 			if (styleMenuBar != null) {
-				styleMenuBar.addItem(new MenuItem(string, new ScheduledCommand() {
+				styleMenuBar.addItem(new MenuItem(string,
+						new ScheduledCommand() {
 
-					@Override
-					public void execute() {
-						loadStyle(string);
-					}
-				}));
+							@Override
+							public void execute() {
+								loadStyle(string);
+							}
+						}));
 			}
 		}
+		
+		
 	}
 
 	protected void loadStyle(String aStyleName) {
 
-		// clear old lists
-		wordListPanel.setCurrentStyle(null);
-		generatorPanel.setCurrentStyle(null);
-		final WaitBox box = new WaitBox("Please Wait", "Loading style \"" + aStyleName + "\", please wait ...");
+		final WaitBox box = new WaitBox("Please Wait", "Loading style \""
+				+ aStyleName + "\", please wait ...");
 		box.show();
 
 		TypedListener<Style> listener = new TypedListener<Style>() {
 
 			@Override
 			public void notifyMe(Style aStyle) {
-				styleDesription.setHTML("<div align=left><h3>" + aStyle.getName() + " - Style" + "</h3></div>&nbsp;&nbsp;"
-						+ aStyle.getDescription());
-				wordListPanel.setCurrentStyle(aStyle);
-				generatorPanel.setCurrentStyle(aStyle);
-				setCurrentStyle(aStyle);
+				styleDesription.setHTML("<div align=left><h3>"
+						+ aStyle.getName() + " - Style"
+						+ "</h3></div>&nbsp;&nbsp;" + aStyle.getDescription());
+				StyleManager.getInstance().notifyChange(
+						new StyleEvent(aStyle, StyleAction.CHANGED));
 				box.hide();
 			}
 
 			@Override
 			public void notifyFail(Throwable aCaught) {
 				box.hide();
-				AlertBox alertBox = new AlertBox("Error", "Could not load style: " + aCaught.getMessage());
+				AlertBox alertBox = new AlertBox("Error",
+						"Could not load style: " + aCaught.getMessage());
 				alertBox.show();
 			}
 		};
 
 		hippieGen.loadStyle(aStyleName, listener);
-	}
-
-	protected void setCurrentStyle(Style aStyle) {
-		currentStyle = aStyle;
-		wordListPanel.setCurrentStyle(aStyle);
-		generatorPanel.setCurrentStyle(aStyle);
 	}
 
 	private Panel createStatusBar() {
@@ -148,13 +170,16 @@ public class MainWindow extends Composite {
 
 		Label lbVersion = new Label("Version: " + VERSION_STRING);
 		statusPanel.add(lbVersion);
-		statusPanel.setCellVerticalAlignment(lbVersion, HasVerticalAlignment.ALIGN_MIDDLE);
+		statusPanel.setCellVerticalAlignment(lbVersion,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 
 		Label lbImpressum = new Label();
 		lbImpressum.setText(" + + + Contact: hippie.ipsum@gmail.com");
 		statusPanel.add(lbImpressum);
-		statusPanel.setCellVerticalAlignment(lbImpressum, HasVerticalAlignment.ALIGN_MIDDLE);
-		statusPanel.setCellHorizontalAlignment(lbImpressum, HasHorizontalAlignment.ALIGN_RIGHT);
+		statusPanel.setCellVerticalAlignment(lbImpressum,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		statusPanel.setCellHorizontalAlignment(lbImpressum,
+				HasHorizontalAlignment.ALIGN_RIGHT);
 
 		return statusPanel;
 	}
@@ -217,7 +242,7 @@ public class MainWindow extends Composite {
 		styleMenuBar = new MenuBar(true);
 		styleMenuBar.setAutoOpen(false);
 
-		MenuItem addItem = menuBar.addItem("Select", styleMenuBar);
+		menuBar.addItem("Select", styleMenuBar);
 
 		MenuItem miSave = new MenuItem("Save", false, new Command() {
 
@@ -228,19 +253,18 @@ public class MainWindow extends Composite {
 		});
 
 		menuBar.addItem(miSave);
-		
+
 		MenuItem miExport = new MenuItem("Export", false, new Command() {
 
 			@Override
 			public void execute() {
-				currentStyle.export();
+				ImportExportDialog importExportDialog = new ImportExportDialog(
+						currentStyle);
+				importExportDialog.show();
 			}
 		});
 
 		menuBar.addItem(miExport);
-		
-		
-		
 
 		return menuItem;
 	}
@@ -267,17 +291,21 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Boolean aSuccess) {
+				StyleManager.getInstance().notifyChange(
+						new StyleEvent(currentStyle, StyleAction.SAVED));
 				box.hide();
 			}
 
 			@Override
 			public void notifyFail(Throwable aCaught) {
 				box.hide();
-				AlertBox alertBox = new AlertBox("Error", "Could not save style: " + aCaught.getMessage());
+				AlertBox alertBox = new AlertBox("Error",
+						"Could not save theme: " + aCaught.getMessage());
 				alertBox.show();
 			}
 		};
 		hippieGen.saveStyle(currentStyle, listener);
+
 	}
 
 }

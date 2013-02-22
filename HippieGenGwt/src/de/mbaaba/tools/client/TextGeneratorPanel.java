@@ -31,6 +31,24 @@ public class TextGeneratorPanel extends VerticalPanel {
 	private TextArea resultTextBox;
 
 	public TextGeneratorPanel() {
+
+		StyleManager.getInstance().addListener(new TypedListener<StyleEvent>() {
+
+			@Override
+			public void notifyMe(StyleEvent aResult) {
+				switch (aResult.action) {
+				case CHANGED:
+					setCurrentStyle(aResult.style);
+				default:
+					break;
+				}
+			}
+
+			@Override
+			public void notifyFail(Throwable aCaught) {
+			}
+		});
+
 		setSpacing(0);
 		CellPanel parameterArea = createParameterArea();
 		add(parameterArea);
@@ -57,7 +75,8 @@ public class TextGeneratorPanel extends VerticalPanel {
 		Label lblNewLabel = new Label("Number of paragraphs:");
 		horzPanel.add(lblNewLabel);
 		lblNewLabel.setWidth("");
-		horzPanel.setCellVerticalAlignment(lblNewLabel, HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellVerticalAlignment(lblNewLabel,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 
 		final IntegerBox numParagraphs = new IntegerBox();
 		numParagraphs.setAlignment(TextAlignment.CENTER);
@@ -66,12 +85,15 @@ public class TextGeneratorPanel extends VerticalPanel {
 		numParagraphs.setWidth("16");
 		horzPanel.add(numParagraphs);
 
-		horzPanel.setCellVerticalAlignment(numParagraphs, HasVerticalAlignment.ALIGN_MIDDLE);
-		horzPanel.setCellHorizontalAlignment(numParagraphs, HasHorizontalAlignment.ALIGN_LEFT);
+		horzPanel.setCellVerticalAlignment(numParagraphs,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellHorizontalAlignment(numParagraphs,
+				HasHorizontalAlignment.ALIGN_LEFT);
 
 		Label lb2 = new Label("Paragraph length:");
 		horzPanel.add(lb2);
-		horzPanel.setCellVerticalAlignment(lb2, HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellVerticalAlignment(lb2,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 
 		final IntegerBox numSentencesBox = new IntegerBox();
 		numSentencesBox.setAlignment(TextAlignment.CENTER);
@@ -79,31 +101,37 @@ public class TextGeneratorPanel extends VerticalPanel {
 		numSentencesBox.setText("8");
 		numSentencesBox.setWidth("16");
 		horzPanel.add(numSentencesBox);
-		horzPanel.setCellVerticalAlignment(numSentencesBox, HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellVerticalAlignment(numSentencesBox,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 
-		horzPanel.setCellVerticalAlignment(numSentencesBox, HasVerticalAlignment.ALIGN_MIDDLE);
-		horzPanel.setCellHorizontalAlignment(numSentencesBox, HasHorizontalAlignment.ALIGN_LEFT);
+		horzPanel.setCellVerticalAlignment(numSentencesBox,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellHorizontalAlignment(numSentencesBox,
+				HasHorizontalAlignment.ALIGN_LEFT);
 
 		Button btnNewButton = new Button();
 		btnNewButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				
+
 				TextGenerator textGenerator = new TextGenerator(currentStyle);
-				String s = textGenerator.createText(numParagraphs.getValue(), numSentencesBox.getValue());
+				String s = textGenerator.createText(numParagraphs.getValue(),
+						numSentencesBox.getValue());
 				resultTextBox.setText(s);
 			}
 		});
 		btnNewButton.setText("Create!");
 		btnNewButton.setWidth("16");
 		horzPanel.add(btnNewButton);
-		horzPanel.setCellVerticalAlignment(btnNewButton, HasVerticalAlignment.ALIGN_MIDDLE);
-		horzPanel.setCellHorizontalAlignment(btnNewButton, HasHorizontalAlignment.ALIGN_RIGHT);
+		horzPanel.setCellVerticalAlignment(btnNewButton,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		horzPanel.setCellHorizontalAlignment(btnNewButton,
+				HasHorizontalAlignment.ALIGN_RIGHT);
 
 		return horzPanel;
 
 	}
 
-	public void setCurrentStyle(Style aStyle) {
+	private void setCurrentStyle(Style aStyle) {
 		currentStyle = aStyle;
 		resultTextBox.setText("");
 	}

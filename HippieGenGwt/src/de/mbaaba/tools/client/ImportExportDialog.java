@@ -5,18 +5,62 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import de.mbaaba.tools.client.StyleEvent.StyleAction;
+import de.mbaaba.tools.shared.Style;
 
 public class ImportExportDialog extends DialogBox {
 
+	private Style currentStyle;
+	private TextArea txtStyleAsText;
 
-	public ImportExportDialog() {
-		setText("Import");
+	public ImportExportDialog(Style aCurrentStyle) {
+		currentStyle = aCurrentStyle;
 		final DialogBox box = this;
-		box.setText("Theme Import/Export");
+		box.setText("Import/Export " + currentStyle.getName());
+
+		VerticalPanel mainPanel = new VerticalPanel();
+		mainPanel.setSize("695px", "212px");
+
+		txtStyleAsText = new TextArea();
+		txtStyleAsText.setText(currentStyle.exportToText());
+		mainPanel.add(txtStyleAsText);
+		txtStyleAsText.setSize("100%", "100%");
+
+		HorizontalPanel btnArea = new HorizontalPanel();
+		mainPanel.add(btnArea);
+		btnArea.setSize("100%", "30");
+
+		Button btnImport = new Button("Import");
+		btnImport.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				currentStyle.importFromText(txtStyleAsText.getText());
+				StyleManager.getInstance().notifyChange(
+						new StyleEvent(currentStyle, StyleAction.CHANGED));
+
+			}
+		});
+		Button btnCancel = new Button("Cancel");
+		btnCancel.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				hide();
+			}
+		});
+
+		btnArea.add(btnImport);
+		btnArea.add(btnCancel);
+		
+		
+		
+		box.add(mainPanel);
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
@@ -25,27 +69,6 @@ public class ImportExportDialog extends DialogBox {
 			}
 		});
 
-		DockPanel dockPanel = new DockPanel();
-		setWidget(dockPanel);
-		dockPanel.setSize("100%", "100%");
-
-		TextBox txtStyleAsText = new TextBox();
-		txtStyleAsText.setText("");
-		dockPanel.add(txtStyleAsText, DockPanel.CENTER);
-		txtStyleAsText.setWidth("100%");
-
-		HorizontalPanel btnArea = new HorizontalPanel();
-		dockPanel.add(btnArea, DockPanel.SOUTH);
-		btnArea.setWidth("100%");
-		
-		Button btnImport = new Button("Import");
-		btnImport.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				
-			}
-		});
 	}
 
 }

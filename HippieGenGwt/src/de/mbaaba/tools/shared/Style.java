@@ -42,21 +42,22 @@ public class Style implements Serializable {
 		this.name = name;
 	}
 
-	public void export() {
+	public String exportToText() {
+		String s = "";
+		s = s + "name=" + name + "\n";
+		s = s + "description=" + description + "\n";
 
-		System.out.println("name=" + name);
-		System.out.println("description=" + description);
-
-		System.out.println(printList(wordsMap.get(WordTypes.NUMBER_SINGULAR)));
-		System.out.println(printList(wordsMap.get(WordTypes.NOUN_SINGULAR)));
-		System.out.println(printList(wordsMap.get(WordTypes.VERB_SINGULAR)));
-		System.out.println(printList(wordsMap.get(WordTypes.NUMBER_PLURAL)));
-		System.out.println(printList(wordsMap.get(WordTypes.NOUN_PLURAL)));
-		System.out.println(printList(wordsMap.get(WordTypes.VERB_PLURAL)));
-		System.out.println(printList(wordsMap.get(WordTypes.ATTRIBUTES)));
-		System.out.println(printList(wordsMap.get(WordTypes.PREPOSITION)));
-		System.out.println(printList(wordsMap.get(WordTypes.POSSESSIVE_PRONOUN)));
-		System.out.println(printList(wordsMap.get(WordTypes.PUNCTUATION)));
+		s = s + printList(wordsMap.get(WordTypes.NUMBER_SINGULAR)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.NOUN_SINGULAR)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.VERB_SINGULAR)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.NUMBER_PLURAL)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.NOUN_PLURAL)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.VERB_PLURAL)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.ATTRIBUTES)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.PREPOSITION)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.POSSESSIVE_PRONOUN)) + "\n";
+		s = s + printList(wordsMap.get(WordTypes.PUNCTUATION)) + "\n";
+		return s;
 
 	}
 
@@ -69,5 +70,8 @@ public class Style implements Serializable {
 		s = wordList.getWordType().name() + "=" + s;
 		return s;
 
+	}
+
+	public void importFromText(String text) {
 	}
 }
