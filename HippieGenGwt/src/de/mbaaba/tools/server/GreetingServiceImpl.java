@@ -32,7 +32,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 		for (WordTypes wordTypes : WordTypes.values()) {
 			String loadedList = loadList(aStyleName, wordTypes);
 			WordList wordList = new WordList(wordTypes);
-			wordList.parse(loadedList);
+			wordList.parse(loadedList, WordList.NEWLINE);
 			map.put(wordTypes, wordList);
 		}
 		Style style = new Style(aStyleName, description, map);
@@ -41,7 +41,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 	@Override
 	public String[] getStyleNames() throws IllegalArgumentException {
-		return new String[] { "Default", "Hippie", "Garden", "Startrek" };
+		return new String[] { "Hippie (deutsch)", "Garten (deutsch)", "Startrek (english)" };
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 		Collection<WordList> values = aStyle.getWordsMap().values();
 		for (WordList wordList : values) {
-			entity = new Entity("WordList", aStyle.getName() + "." + wordList.getWordType());
+			entity = new Entity("WordList", aStyle.getName() + "." + wordList.getWordType().name());
 			entity.setProperty("content", wordList.buildString());
 			putToDatastore(datastore, entity);
 		}
@@ -66,17 +66,18 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 	private String loadList(String aTheme, WordTypes aWordType) throws IllegalArgumentException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Key guestbookKey = KeyFactory.createKey("WordList", aTheme + "." + aWordType);
+		Key guestbookKey = KeyFactory.createKey("WordList", aTheme + "." + aWordType.name());
 		Entity greeting;
 		String wordsAsString = null;
 		try {
 			greeting = getFromDatastore(datastore, guestbookKey);
 			wordsAsString = (String) greeting.getProperty("content");
 		} catch (EntityNotFoundException e) {
-			System.out.println("No wordlist \"" + aWordType + "\" found for theme \"" + aTheme + "\"");
+			
+			System.out.println("No wordlist \"" + aWordType.name() + "\" found for theme \"" + aTheme + "\"");
 		}
 		if (wordsAsString == null) {
-			wordsAsString = DefaultWordLists.defaultStyle.getWordsMap().get(aWordType).buildString();
+			wordsAsString = DefaultWordLists.defaultStyle.getWordsMap().get(aWordType.name()).buildString();
 		}
 		return wordsAsString;
 

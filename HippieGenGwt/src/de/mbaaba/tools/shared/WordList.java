@@ -11,6 +11,8 @@ public class WordList implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String NEWLINE = "\\n";
+
 	private WordTypes wordType;
 	private List<String> words;
 
@@ -25,7 +27,7 @@ public class WordList implements Serializable {
 
 	public WordList(WordTypes aWordType, String numbersSingularDefaults) {
 		this(aWordType);
-		parse(numbersSingularDefaults);
+		parse(numbersSingularDefaults, NEWLINE);
 	}
 
 	public WordTypes getWordType() {
@@ -62,11 +64,13 @@ public class WordList implements Serializable {
 		return buf.toString();
 	}
 
-	public void parse(String aWordsAsString) {
+	public void parse(String aWordsAsString, String aSeparator) {
 		clearAll();
-		String[] split = aWordsAsString.split("\\n");
+		String[] split = aWordsAsString.split(aSeparator);
 		for (String string : split) {
-			addWord(string.trim());
+			if (string.trim().length() > 0) {
+				addWord(string.trim());
+			}
 		}
 	}
 

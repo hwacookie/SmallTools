@@ -138,10 +138,7 @@ public class TextGenerator {
 	}
 
 
-	public Style getCurrentStyle() {
-		if (currentStyle == null) {
-			return DefaultWordLists.defaultStyle;
-		}
+	private Style getCurrentStyle() {
 		return currentStyle;
 	}
 }

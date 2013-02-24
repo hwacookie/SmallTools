@@ -21,10 +21,10 @@ public class ImportExportDialog extends DialogBox {
 	public ImportExportDialog(Style aCurrentStyle) {
 		currentStyle = aCurrentStyle;
 		final DialogBox box = this;
-		box.setText("Import/Export " + currentStyle.getName());
+		box.setText("Import/Export");
 
 		VerticalPanel mainPanel = new VerticalPanel();
-		//mainPanel.setSize("695px", "212px");
+		mainPanel.setSize("695px", "212px");
 
 		createEditArea(mainPanel);
 		createButtons(mainPanel);
@@ -36,6 +36,7 @@ public class ImportExportDialog extends DialogBox {
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
 				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
+				setSize("700", "400");
 				setPopupPosition(left, top);
 			}
 		});

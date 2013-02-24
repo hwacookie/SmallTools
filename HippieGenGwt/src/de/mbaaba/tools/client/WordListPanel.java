@@ -17,6 +17,7 @@ import de.mbaaba.tools.shared.WordTypes;
 
 public class WordListPanel extends DecoratedStackPanel {
 
+	private static final String NEWLINE = "\\n";
 	private Map<WordTypes, TextArea> areas = new HashMap<WordTypes, TextArea>();
 	private Style currentStyle;
 
@@ -65,15 +66,18 @@ public class WordListPanel extends DecoratedStackPanel {
 		final TextArea txtArea = new TextArea();
 		txtArea.setVisibleLines(14);
 		wordListStackPanel.add(txtArea, aWordType.toString(), false);
-		txtArea.setSize("300px\r\n", "300px");
+		txtArea.setSize("300px", "300px");
 		txtArea.setText("");
 		txtArea.addBlurHandler(new BlurHandler() {
 
 			@Override
 			public void onBlur(BlurEvent event) {
 				// automatically reparse word list when textArea looses focus
-				WordList wordList = currentStyle.getWordsMap().get(aWordType);
-				wordList.parse(txtArea.getText());
+				if (currentStyle != null) {
+					WordList wordList = currentStyle.getWordsMap().get(
+							aWordType);
+					wordList.parse(txtArea.getText(), NEWLINE);
+				}
 			}
 		});
 		areas.put(aWordType, txtArea);
@@ -100,7 +104,7 @@ public class WordListPanel extends DecoratedStackPanel {
 		Set<Entry<WordTypes, TextArea>> entrySet = areas.entrySet();
 		for (Entry<WordTypes, TextArea> entry : entrySet) {
 			WordList wordList = currentStyle.getWordsMap().get(entry.getKey());
-			wordList.parse(entry.getValue().getText());
+			wordList.parse(entry.getValue().getText(), NEWLINE);
 		}
 
 	}

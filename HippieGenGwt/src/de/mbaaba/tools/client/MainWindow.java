@@ -21,7 +21,7 @@ import de.mbaaba.tools.shared.Style;
 
 public class MainWindow extends Composite {
 
-	private static final String VERSION_STRING = "0.2a";
+	private static final String VERSION_STRING = "0.2b";
 	private static final String DEFAULT_THEME = "Hippie";
 	private HippieGen hippieGen;
 	private MenuBar styleMenuBar;
@@ -44,6 +44,10 @@ public class MainWindow extends Composite {
 				switch (aResult.action) {
 				case CHANGED:
 					currentStyle = aResult.style;
+					styleDesription.setHTML("<div align=left><h3>"
+							+ currentStyle.getName() + " - Style"
+							+ "</h3></div>&nbsp;" + currentStyle.getDescription());
+					
 				default:
 					break;
 				}
@@ -143,9 +147,6 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Style aStyle) {
-				styleDesription.setHTML("<div align=left><h3>"
-						+ aStyle.getName() + " - Style"
-						+ "</h3></div>&nbsp;&nbsp;" + aStyle.getDescription());
 				StyleManager.getInstance().notifyChange(
 						new StyleEvent(aStyle, StyleAction.CHANGED));
 				box.hide();
@@ -254,10 +255,13 @@ public class MainWindow extends Composite {
 
 		menuBar.addItem(miSave);
 
-		MenuItem miExport = new MenuItem("Export", false, new Command() {
+		MenuItem miExport = new MenuItem("Import/Export", false, new Command() {
 
 			@Override
 			public void execute() {
+				if (currentStyle==null) {
+					currentStyle=new Style();
+				}
 				ImportExportDialog importExportDialog = new ImportExportDialog(
 						currentStyle);
 				importExportDialog.show();

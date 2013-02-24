@@ -1,0 +1,12 @@
+NAME=Startrek (english)
+DESCRIPTION=Hippie ipsum works quite nicely in english, too!
+NUMBER_SINGULAR=A/one/the/no/
+NOUN_SINGULAR=warrior/klingonian/human/starship/cruiser/planet/sun/warp-drive/space/
+VERB_SINGULAR=flies/drives/warps/fights/talks/
+NUMBER_PLURAL=many/a lot of/some/a few/
+NOUN_PLURAL=warriors/klingonians/humans/starships/cruisers/planets/warp-drive/
+VERB_PLURAL=fly/drive/warp/fight/talk/
+ATTRIBUTES=smiling/happy/frozen/green/red/yellow/blue/amazing/awesome/awkward/cheap/damn/
+PREPOSITION=before/after/under/over/next to/close to/right after/
+POSSESSIVE_PRONOUN=the/my/your/their/
+PUNCTUATION=./././././././././,/;/:/, but/, even though/

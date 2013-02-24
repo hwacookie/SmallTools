@@ -4,16 +4,27 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import de.mbaaba.tools.client.StyleEvent;
+import de.mbaaba.tools.client.StyleEvent.StyleAction;
+import de.mbaaba.tools.client.StyleManager;
 
 public class Style implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static final String NAME = "NAME";
+	private static final String DESCRIPTION = "DESCRIPTION";
+	private static final String SEPA = "/";
 	private String description;
 	private String name;
 	private Map<WordTypes, WordList> wordsMap;
 
 	public Style() {
-		this("", "", new HashMap<WordTypes, WordList>());
+		this("New Theme", "No Description yet", new HashMap<WordTypes, WordList>());
+		for (WordTypes wordType : WordTypes.values()) {
+			wordsMap.put(wordType, new WordList(wordType));
+		}
 	}
 
 	public Style(String aName, String aDescription, Map<WordTypes, WordList> map) {
@@ -44,8 +55,8 @@ public class Style implements Serializable {
 
 	public String exportToText() {
 		String s = "";
-		s = s + "name=" + name + "\n";
-		s = s + "description=" + description + "\n";
+		s = s + NAME + "=" + name + "\n";
+		s = s + DESCRIPTION + "=" + description + "\n";
 
 		s = s + printList(wordsMap.get(WordTypes.NUMBER_SINGULAR)) + "\n";
 		s = s + printList(wordsMap.get(WordTypes.NOUN_SINGULAR)) + "\n";
@@ -65,7 +76,7 @@ public class Style implements Serializable {
 		String s = "";
 		List<String> words = wordList.getWords();
 		for (String word : words) {
-			s = s + word + "|";
+			s = s + word + SEPA;
 		}
 		s = wordList.getWordType().name() + "=" + s;
 		return s;
@@ -73,5 +84,19 @@ public class Style implements Serializable {
 	}
 
 	public void importFromText(String text) {
+		Properties props = new Properties();
+		props.load(text);
+		String importedName = props.getProperty(NAME);
+		setName(importedName);
+		setDescription(props.getProperty(DESCRIPTION));
+		Set<WordTypes> keySet = wordsMap.keySet();
+		for (WordTypes wordTypes : keySet) {
+			String s = (String) props.getProperty(wordTypes.name());
+			WordList wordList = wordsMap.get(wordTypes);
+			wordList.parse(s, SEPA);
+		}
+		StyleManager.getInstance().notifyChange(
+				new StyleEvent(this, StyleAction.CHANGED));
+
 	}
 }
