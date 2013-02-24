@@ -21,8 +21,8 @@ import de.mbaaba.tools.shared.Style;
 
 public class MainWindow extends Composite {
 
-	private static final String VERSION_STRING = "0.2b";
-	private static final String DEFAULT_THEME = "Hippie";
+	private static final String VERSION_STRING = "0.3";
+	private static final String DEFAULT_THEME = "Hippie (deutsch)";
 	private HippieGen hippieGen;
 	private MenuBar styleMenuBar;
 	private InlineHTML styleDesription;
