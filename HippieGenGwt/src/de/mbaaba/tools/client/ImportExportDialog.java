@@ -24,13 +24,32 @@ public class ImportExportDialog extends DialogBox {
 		box.setText("Import/Export " + currentStyle.getName());
 
 		VerticalPanel mainPanel = new VerticalPanel();
-		mainPanel.setSize("695px", "212px");
+		//mainPanel.setSize("695px", "212px");
 
+		createEditArea(mainPanel);
+		createButtons(mainPanel);
+		
+		
+		
+		box.add(mainPanel);
+		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
+				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
+				setPopupPosition(left, top);
+			}
+		});
+
+	}
+
+	private void createEditArea(VerticalPanel mainPanel) {
 		txtStyleAsText = new TextArea();
 		txtStyleAsText.setText(currentStyle.exportToText());
 		mainPanel.add(txtStyleAsText);
 		txtStyleAsText.setSize("100%", "100%");
+	}
 
+	private void createButtons(VerticalPanel mainPanel) {
 		HorizontalPanel btnArea = new HorizontalPanel();
 		mainPanel.add(btnArea);
 		btnArea.setSize("100%", "30");
@@ -57,18 +76,6 @@ public class ImportExportDialog extends DialogBox {
 
 		btnArea.add(btnImport);
 		btnArea.add(btnCancel);
-		
-		
-		
-		box.add(mainPanel);
-		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-			public void setPosition(int offsetWidth, int offsetHeight) {
-				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
-				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
-				setPopupPosition(left, top);
-			}
-		});
-
 	}
 
 }
