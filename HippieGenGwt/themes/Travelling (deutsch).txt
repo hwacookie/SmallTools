@@ -1,0 +1,12 @@
+NAME=Travel (deutsch)
+DESCRIPTION=EIn besonderes Ipsum für Reiseblogger
+NUMBER_SINGULAR=der/die/das/dem/seiner/ihrer/meiner/deiner/unserer/seine/ihre/meine/deine/unsere/
+NOUN_SINGULAR=Fluggesellschaft/Reise/Pass/Bus/Schiff/Berg/Auto/Strand/Ball/Kultur/Urlaub/Ferien/Fahrt/Bildung/
+VERB_SINGULAR=reist/fährt/fotografiert/spricht/redet/sagt/geht/denkt/
+NUMBER_PLURAL=viele/manche/tausend/mehrere/dutzende/die/
+NOUN_PLURAL=Fluggesellschaften/Reisen/Pässe/Busse/Schiffe/Berge/Autos/Bälle/Ferien/
+VERB_PLURAL=reisen/fahren/fotografieren/sprechen/reden/sagen/gehen/denken/verklagen/beklagen/loben/geniessen/
+ATTRIBUTES=schöne/seltene/teure/billige/sinnlose/denkwürdige/seltsame/unnütze/tolle/hässliche/steile/stumpfe/
+PREPOSITION=in/an/zu/bei/auf/neben/unter/am/von/im/
+POSSESSIVE_PRONOUN=eine/ein/manch/der/die/das/
+PUNCTUATION=./././././././!/?/:/,/;/:/./
