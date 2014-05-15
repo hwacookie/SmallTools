@@ -62,22 +62,27 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 	
 	// ------------------------------------------------------------------------------
 
-	//private java.util.Random random = new java.util.Random();
-
 	private String loadList(String aTheme, WordTypes aWordType) throws IllegalArgumentException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Key guestbookKey = KeyFactory.createKey("WordList", aTheme + "." + aWordType.name());
+		String name = aWordType.name();
+		Key guestbookKey = KeyFactory.createKey("WordList", aTheme + "." + name);
 		Entity greeting;
 		String wordsAsString = null;
 		try {
 			greeting = getFromDatastore(datastore, guestbookKey);
 			wordsAsString = (String) greeting.getProperty("content");
 		} catch (EntityNotFoundException e) {
-			
-			System.out.println("No wordlist \"" + aWordType.name() + "\" found for theme \"" + aTheme + "\"");
+			System.out.println("No wordlist \"" + name + "\" found for theme \"" + aTheme + "\"");
 		}
 		if (wordsAsString == null) {
-			wordsAsString = DefaultWordLists.defaultStyle.getWordsMap().get(aWordType.name()).buildString();
+			Style defaultStyle = DefaultWordLists.defaultStyle;
+			Map<WordTypes, WordList> wordsMap = defaultStyle.getWordsMap();
+			WordList wordList = wordsMap.get(aWordType);
+			if (wordList!=null) {
+				wordsAsString = wordList.buildString();
+			} else {
+				wordsAsString = "Fehler!";
+			}
 		}
 		return wordsAsString;
 

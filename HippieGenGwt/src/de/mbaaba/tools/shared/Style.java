@@ -22,7 +22,7 @@ public class Style implements Serializable {
 
 	public Style() {
 		this("New Theme", "No Description yet", new HashMap<WordTypes, WordList>());
-		for (WordTypes wordType : WordTypes.values()) {
+		for (WordTypes wordType : DefaultWordLists.defaultStyle.wordsMap.keySet()) {
 			wordsMap.put(wordType, new WordList(wordType));
 		}
 	}

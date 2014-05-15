@@ -19,18 +19,18 @@ public class DefaultWordLists {
 	public static Style defaultStyle;
 
 	static {
-		Map<WordTypes, WordList> hippieDefaults = new HashMap<WordTypes, WordList>();
-		hippieDefaults.put(WordTypes.NUMBER_SINGULAR, new WordList(WordTypes.NUMBER_SINGULAR, numbersSingularDefaults));
-		hippieDefaults.put(WordTypes.ATTRIBUTES, new WordList(WordTypes.ATTRIBUTES, attributes));
-		hippieDefaults.put(WordTypes.NOUN_SINGULAR, new WordList(WordTypes.NOUN_SINGULAR, subjectsSingularDefaults));
-		hippieDefaults.put(WordTypes.VERB_SINGULAR, new WordList(WordTypes.VERB_SINGULAR, verbsSingularDefaults));
-		hippieDefaults.put(WordTypes.NUMBER_PLURAL, new WordList(WordTypes.NUMBER_PLURAL, numbersPluralDefaults));
-		hippieDefaults.put(WordTypes.NOUN_PLURAL, new WordList(WordTypes.NOUN_PLURAL, subjectsPluralDefaults));
-		hippieDefaults.put(WordTypes.VERB_PLURAL, new WordList(WordTypes.VERB_PLURAL, verbsPluralDefaults));
-		hippieDefaults.put(WordTypes.PREPOSITION, new WordList(WordTypes.PREPOSITION, prepositionsDefaults));
-		hippieDefaults.put(WordTypes.POSSESSIVE_PRONOUN, new WordList(WordTypes.POSSESSIVE_PRONOUN, possessivePronounsDefaults));
-		hippieDefaults.put(WordTypes.PUNCTUATION, new WordList(WordTypes.PUNCTUATION, punctuationsDefaults));
+		Map<WordTypes, WordList> defaultWords = new HashMap<WordTypes, WordList>();
+		defaultWords.put(WordTypes.NUMBER_SINGULAR, new WordList(WordTypes.NUMBER_SINGULAR, numbersSingularDefaults));
+		defaultWords.put(WordTypes.ATTRIBUTES, new WordList(WordTypes.ATTRIBUTES, attributes));
+		defaultWords.put(WordTypes.NOUN_SINGULAR, new WordList(WordTypes.NOUN_SINGULAR, subjectsSingularDefaults));
+		defaultWords.put(WordTypes.VERB_SINGULAR, new WordList(WordTypes.VERB_SINGULAR, verbsSingularDefaults));
+		defaultWords.put(WordTypes.NUMBER_PLURAL, new WordList(WordTypes.NUMBER_PLURAL, numbersPluralDefaults));
+		defaultWords.put(WordTypes.NOUN_PLURAL, new WordList(WordTypes.NOUN_PLURAL, subjectsPluralDefaults));
+		defaultWords.put(WordTypes.VERB_PLURAL, new WordList(WordTypes.VERB_PLURAL, verbsPluralDefaults));
+		defaultWords.put(WordTypes.PREPOSITION, new WordList(WordTypes.PREPOSITION, prepositionsDefaults));
+		defaultWords.put(WordTypes.POSSESSIVE_PRONOUN, new WordList(WordTypes.POSSESSIVE_PRONOUN, possessivePronounsDefaults));
+		defaultWords.put(WordTypes.PUNCTUATION, new WordList(WordTypes.PUNCTUATION, punctuationsDefaults));
 
-		defaultStyle = new Style("Default", "<h3>Default theme</h3>", hippieDefaults);
+		defaultStyle = new Style("Default", "<h3>Default theme</h3>", defaultWords);
 	}
 }

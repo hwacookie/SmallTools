@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import de.mbaaba.tools.shared.DefaultWordLists;
 import de.mbaaba.tools.shared.Style;
 import de.mbaaba.tools.shared.WordList;
 import de.mbaaba.tools.shared.WordTypes;
