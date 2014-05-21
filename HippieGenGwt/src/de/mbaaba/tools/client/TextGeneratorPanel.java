@@ -2,6 +2,7 @@ package de.mbaaba.tools.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.media.client.Audio;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -32,7 +33,7 @@ public class TextGeneratorPanel extends VerticalPanel {
 
 	public TextGeneratorPanel() {
 
-		StyleManager.getInstance().addListener(new TypedListener<StyleEvent>() {
+		NotificationManager.getInstance().addListener(new TypedListener<StyleEvent>() {
 
 			@Override
 			public void notifyMe(StyleEvent aResult) {
@@ -111,12 +112,21 @@ public class TextGeneratorPanel extends VerticalPanel {
 
 		Button btnNewButton = new Button();
 		btnNewButton.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
-
+				
 				TextGenerator textGenerator = new TextGenerator(currentStyle);
 				String s = textGenerator.createText(numParagraphs.getValue(),
 						numSentencesBox.getValue());
-				resultTextBox.setText(s);
+				
+				
+				Audio audio = Audio.createIfSupported();
+				if (audio!=null) {
+					audio.setSrc("http://scottshuster.com/music/TheTypewriter-1950.mp3");
+					audio.play();
+				}
+				TextAddAnimation textAddAnimation = new TextAddAnimation(resultTextBox, s);
+				textAddAnimation.run(30000);
 			}
 		});
 		btnNewButton.setText("Create!");

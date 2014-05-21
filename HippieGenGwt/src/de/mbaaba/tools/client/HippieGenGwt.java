@@ -13,6 +13,7 @@ public class HippieGenGwt implements EntryPoint {
 	/**
 	 * This is the entry point method.
 	 */
+	@Override
 	public void onModuleLoad() {
 		MainWindow mainWindow = new MainWindow();
 		RootPanel.get().add(mainWindow);

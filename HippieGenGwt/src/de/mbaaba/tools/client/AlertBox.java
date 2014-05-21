@@ -33,6 +33,7 @@ public class AlertBox extends DialogBox {
 		panel.setCellHorizontalAlignment(buttonClose, HasAlignment.ALIGN_RIGHT);
 		box.add(panel);
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			@Override
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
 				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;

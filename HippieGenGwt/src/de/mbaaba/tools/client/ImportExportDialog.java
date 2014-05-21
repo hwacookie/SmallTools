@@ -33,6 +33,7 @@ public class ImportExportDialog extends DialogBox {
 		
 		box.add(mainPanel);
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			@Override
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
 				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
@@ -61,7 +62,7 @@ public class ImportExportDialog extends DialogBox {
 			@Override
 			public void onClick(ClickEvent event) {
 				currentStyle.importFromText(txtStyleAsText.getText());
-				StyleManager.getInstance().notifyChange(
+				NotificationManager.getInstance().fireStyleEvent(
 						new StyleEvent(currentStyle, StyleAction.CHANGED));
 
 			}

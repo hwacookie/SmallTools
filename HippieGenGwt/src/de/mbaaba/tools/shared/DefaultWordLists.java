@@ -16,6 +16,8 @@ public class DefaultWordLists {
 	static String prepositionsDefaults = "in\nan\nzu\nbei\nauf\nneben\nunter\nam\nvon\nim";
 	static String possessivePronounsDefaults = "der\ndie\ndas\ndem\nseiner\nihrer\nmeiner\ndeiner\nunserer\nseine\nihre\nmeine\ndeine\nunsere";
 	static String punctuationsDefaults = ".\n.\n.\n.\n!\n!!\n?\n?!\n:\n,\n;\n:\n";
+
+	static String defaultStyleNames = "Hippie\nGarten\nReise\nStartrek";
 	public static Style defaultStyle;
 
 	static {
@@ -30,7 +32,6 @@ public class DefaultWordLists {
 		defaultWords.put(WordTypes.PREPOSITION, new WordList(WordTypes.PREPOSITION, prepositionsDefaults));
 		defaultWords.put(WordTypes.POSSESSIVE_PRONOUN, new WordList(WordTypes.POSSESSIVE_PRONOUN, possessivePronounsDefaults));
 		defaultWords.put(WordTypes.PUNCTUATION, new WordList(WordTypes.PUNCTUATION, punctuationsDefaults));
-
 		defaultStyle = new Style("Default", "<h3>Default theme</h3>", defaultWords);
 	}
 }

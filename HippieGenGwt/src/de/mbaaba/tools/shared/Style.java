@@ -6,23 +6,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Stringify;
+
 import de.mbaaba.tools.client.StyleEvent;
 import de.mbaaba.tools.client.StyleEvent.StyleAction;
-import de.mbaaba.tools.client.StyleManager;
+import de.mbaaba.tools.client.NotificationManager;
 
+@Entity
 public class Style implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "NAME";
 	private static final String DESCRIPTION = "DESCRIPTION";
 	private static final String SEPA = "/";
-	private String description;
+	private static final String OWNER = "OWNER";
+
+	@Id
 	private String name;
+
+	private String description;
+	private String owner;
+	@Stringify(WordTypeStringifier.class)
 	private Map<WordTypes, WordList> wordsMap;
 
 	public Style() {
-		this("New Theme", "No Description yet", new HashMap<WordTypes, WordList>());
-		for (WordTypes wordType : DefaultWordLists.defaultStyle.wordsMap.keySet()) {
+		this("New Theme", "No Description yet",
+				new HashMap<WordTypes, WordList>());
+		// add all word types
+		for (WordTypes wordType : WordTypes.values()) {
 			wordsMap.put(wordType, new WordList(wordType));
 		}
 	}
@@ -57,6 +70,7 @@ public class Style implements Serializable {
 		String s = "";
 		s = s + NAME + "=" + name + "\n";
 		s = s + DESCRIPTION + "=" + description + "\n";
+		s = s + OWNER + "=" + owner + "\n";
 
 		s = s + printList(wordsMap.get(WordTypes.NUMBER_SINGULAR)) + "\n";
 		s = s + printList(wordsMap.get(WordTypes.NOUN_SINGULAR)) + "\n";
@@ -95,8 +109,16 @@ public class Style implements Serializable {
 			WordList wordList = wordsMap.get(wordTypes);
 			wordList.parse(s, SEPA);
 		}
-		StyleManager.getInstance().notifyChange(
+		NotificationManager.getInstance().fireStyleEvent(
 				new StyleEvent(this, StyleAction.CHANGED));
 
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 }

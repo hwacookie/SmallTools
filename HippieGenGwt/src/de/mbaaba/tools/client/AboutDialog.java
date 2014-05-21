@@ -43,6 +43,7 @@ public class AboutDialog extends DialogBox {
 
 		Button btnOk = new Button("Ok");
 		btnOk.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				box.hide();
 
@@ -55,6 +56,7 @@ public class AboutDialog extends DialogBox {
 
 		box.add(horizontalPanel);
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			@Override
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
 				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;

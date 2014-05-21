@@ -11,10 +11,10 @@ public class HippieGen {
 
 	// private Map<String, WordList> allLists = new HashMap<String, WordList>();
 
-	private final GreetingServiceAsync client;
+	private final HippieIpsumServiceAsync client;
 
 	public HippieGen() {
-		client = GWT.create(GreetingService.class);
+		client = GWT.create(HippieIpsumService.class);
 		// loadStyle(DEFAULT_STYLE, new TypedListener<Style>() {
 		//
 		// @Override
@@ -64,6 +64,22 @@ public class HippieGen {
 		getClient().saveStyle(aStyle, callback);
 	}
 
+	public void newStyle(Style aStyle, final TypedListener<Boolean> aListener) {
+		AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable aCaught) {
+				aListener.notifyFail(aCaught);
+			}
+
+			@Override
+			public void onSuccess(Void blubber) {
+				aListener.notifyMe(Boolean.TRUE);
+			}
+		};
+		getClient().newStyle(aStyle, callback);
+	}
+
 	// private void getStyles() {
 	// setAvailableStyles(new String[0]);
 	// AsyncCallback<String[]> callback = new AsyncCallback<String[]>() {
@@ -83,7 +99,7 @@ public class HippieGen {
 	// getClient().getStyleNames(callback);
 	// }
 
-	public GreetingServiceAsync getClient() {
+	public HippieIpsumServiceAsync getClient() {
 		return client;
 	}
 

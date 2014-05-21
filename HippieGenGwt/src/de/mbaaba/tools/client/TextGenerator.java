@@ -19,10 +19,12 @@ public class TextGenerator {
 	}
 
 	public String createText(int numParagraph, int aNumSentences) {
+		x=0;
 		String result = "";
 
 		for (int para = 0; para < numParagraph; para++) {
-			int numSentences = random.nextInt(aNumSentences) + (aNumSentences / 2);
+			int numSentences = random.nextInt(aNumSentences)
+					+ (aNumSentences / 2);
 			for (int sentence = 0; sentence < numSentences; sentence++) {
 				String s = createSentence();
 				result = result + s + " ";
@@ -34,16 +36,26 @@ public class TextGenerator {
 
 	private String createSentence() {
 
-		WordList numbersSingular = getCurrentStyle().getWordsMap().get(WordTypes.NUMBER_SINGULAR);
-		WordList attributes = getCurrentStyle().getWordsMap().get(WordTypes.ATTRIBUTES);
-		WordList nounsSingular = getCurrentStyle().getWordsMap().get(WordTypes.NOUN_SINGULAR);
-		WordList verbsSingular = getCurrentStyle().getWordsMap().get(WordTypes.VERB_SINGULAR);
-		WordList numbersPlural = getCurrentStyle().getWordsMap().get(WordTypes.NUMBER_PLURAL);
-		WordList nounsPlural = getCurrentStyle().getWordsMap().get(WordTypes.NOUN_PLURAL);
-		WordList verbsPlural = getCurrentStyle().getWordsMap().get(WordTypes.VERB_PLURAL);
-		WordList prepositions = getCurrentStyle().getWordsMap().get(WordTypes.PREPOSITION);
-		WordList possessivePronouns = getCurrentStyle().getWordsMap().get(WordTypes.POSSESSIVE_PRONOUN);
-		WordList punctuations = getCurrentStyle().getWordsMap().get(WordTypes.PUNCTUATION);
+		WordList numbersSingular = getCurrentStyle().getWordsMap().get(
+				WordTypes.NUMBER_SINGULAR);
+		WordList attributes = getCurrentStyle().getWordsMap().get(
+				WordTypes.ATTRIBUTES);
+		WordList nounsSingular = getCurrentStyle().getWordsMap().get(
+				WordTypes.NOUN_SINGULAR);
+		WordList verbsSingular = getCurrentStyle().getWordsMap().get(
+				WordTypes.VERB_SINGULAR);
+		WordList numbersPlural = getCurrentStyle().getWordsMap().get(
+				WordTypes.NUMBER_PLURAL);
+		WordList nounsPlural = getCurrentStyle().getWordsMap().get(
+				WordTypes.NOUN_PLURAL);
+		WordList verbsPlural = getCurrentStyle().getWordsMap().get(
+				WordTypes.VERB_PLURAL);
+		WordList prepositions = getCurrentStyle().getWordsMap().get(
+				WordTypes.PREPOSITION);
+		WordList possessivePronouns = getCurrentStyle().getWordsMap().get(
+				WordTypes.POSSESSIVE_PRONOUN);
+		WordList punctuations = getCurrentStyle().getWordsMap().get(
+				WordTypes.PUNCTUATION);
 
 		ArrayList<String> words = new ArrayList<String>();
 
@@ -91,7 +103,8 @@ public class TextGenerator {
 	}
 
 	private String getSingularNoun() {
-		WordList subjectsSingular = getCurrentStyle().getWordsMap().get(WordTypes.NOUN_SINGULAR);
+		WordList subjectsSingular = getCurrentStyle().getWordsMap().get(
+				WordTypes.NOUN_SINGULAR);
 		return randomWord(subjectsSingular).trim();
 	}
 
@@ -110,9 +123,15 @@ public class TextGenerator {
 		return aSet.getRandomWord();
 	}
 
+	int x = 0;
 	private void addWord(List<String> words, String aWord) {
 		if (aWord.length() > 0) {
 			words.add(aWord + " ");
+			SelectionEvent event = new SelectionEvent(aWord);
+			if (x<5) {
+				NotificationManager.getInstance().fireSelectionEvent(event);
+				x++;
+			}
 		}
 	}
 
@@ -130,12 +149,12 @@ public class TextGenerator {
 
 	private String firstToUpper(String aRandomWord) {
 		if (aRandomWord.length() > 1) {
-			return aRandomWord.substring(0, 1).toUpperCase() + aRandomWord.substring(1);
+			return aRandomWord.substring(0, 1).toUpperCase()
+					+ aRandomWord.substring(1);
 		} else {
 			return aRandomWord.toUpperCase();
 		}
 	}
-
 
 	private Style getCurrentStyle() {
 		return currentStyle;

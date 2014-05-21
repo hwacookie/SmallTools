@@ -1,15 +1,17 @@
 package de.mbaaba.tools.client;
 
+import gdurelle.tagcloud.client.tags.TagCloud;
+import gdurelle.tagcloud.client.tags.WordTag;
+
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
-import com.google.gwt.user.client.ui.TextArea;
 
 import de.mbaaba.tools.shared.Style;
 import de.mbaaba.tools.shared.WordList;
@@ -17,14 +19,13 @@ import de.mbaaba.tools.shared.WordTypes;
 
 public class WordListPanel extends DecoratedStackPanel {
 
-	private static final String NEWLINE = "\\n";
-	private Map<WordTypes, TextArea> areas = new HashMap<WordTypes, TextArea>();
+	private Map<WordTypes, TagCloud> areas = new HashMap<WordTypes, TagCloud>();
 	private Style currentStyle;
 
 	public WordListPanel() {
 		super();
 
-		StyleManager.getInstance().addListener(new TypedListener<StyleEvent>() {
+		NotificationManager.getInstance().addListener(new TypedListener<StyleEvent>() {
 
 			@Override
 			public void notifyMe(StyleEvent aResult) {
@@ -42,6 +43,7 @@ public class WordListPanel extends DecoratedStackPanel {
 		});
 		setStyleName("gwt-StackPanel");
 		createLists();
+
 	}
 
 	private void createLists() {
@@ -61,52 +63,48 @@ public class WordListPanel extends DecoratedStackPanel {
 
 	private void createWordGroup(DecoratedStackPanel wordListStackPanel,
 			final WordTypes aWordType) {
-		// WordList wordList =
-		// hippieGen.getCurrentStyle().getWordsMap().get(aWordType);
-		final TextArea txtArea = new TextArea();
-		txtArea.setVisibleLines(14);
-		wordListStackPanel.add(txtArea, aWordType.toString(), false);
-		txtArea.setSize("300px", "300px");
-		txtArea.setText("");
-		txtArea.addBlurHandler(new BlurHandler() {
-
-			@Override
-			public void onBlur(BlurEvent event) {
-				// automatically reparse word list when textArea looses focus
-				if (currentStyle != null) {
-					WordList wordList = currentStyle.getWordsMap().get(
-							aWordType);
-					wordList.parse(txtArea.getText(), NEWLINE);
-				}
-			}
-		});
-		areas.put(aWordType, txtArea);
+		TagCloud tagCloud = new TagCloud();
+		tagCloud.setColored(true);
+		wordListStackPanel.add(tagCloud, aWordType.toString(), false);
+		tagCloud.setWidth("300px");
+		areas.put(aWordType, tagCloud);
 	}
 
+	
 	private void setCurrentStyle(Style aStyle) {
+		Random random = new Random();
 		currentStyle = aStyle;
-		Collection<TextArea> textAreas = areas.values();
-		for (TextArea textArea : textAreas) {
-			textArea.setText("");
+		Collection<TagCloud> textAreas = areas.values();
+		for (TagCloud textArea : textAreas) {
+			textArea.getTags().clear();
 		}
+		
 		if (currentStyle != null) {
 			Set<Entry<WordTypes, WordList>> entrySet = currentStyle
 					.getWordsMap().entrySet();
 			for (Entry<WordTypes, WordList> entry : entrySet) {
-				TextArea textArea = areas.get(entry.getKey());
-				textArea.setText(entry.getValue().buildString());
+				TagCloud textArea = areas.get(entry.getKey());
+				WordList wordList = entry.getValue();
+				
+				List<String> words = wordList.getWords();
+				
+				for (String string : words) {
+					WordTag wordTag = new WordTag(string);
+					wordTag.setNumberOfOccurences(random.nextInt(5));
+					textArea.addWord(wordTag);
+				}
 			}
 		}
 
 	}
-
-	public void reparseWordLists() {
-		Set<Entry<WordTypes, TextArea>> entrySet = areas.entrySet();
-		for (Entry<WordTypes, TextArea> entry : entrySet) {
-			WordList wordList = currentStyle.getWordsMap().get(entry.getKey());
-			wordList.parse(entry.getValue().getText(), NEWLINE);
-		}
-
-	}
+//
+//	public void reparseWordLists() {
+//		Set<Entry<WordTypes, TextArea>> entrySet = areas.entrySet();
+//		for (Entry<WordTypes, TextArea> entry : entrySet) {
+//			WordList wordList = currentStyle.getWordsMap().get(entry.getKey());
+//			wordList.parse(entry.getValue().getText(), NEWLINE);
+//		}
+//
+//	}
 
 }

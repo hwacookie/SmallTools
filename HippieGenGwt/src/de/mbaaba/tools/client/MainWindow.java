@@ -1,5 +1,11 @@
 package de.mbaaba.tools.client;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
@@ -18,26 +24,29 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 import de.mbaaba.tools.client.StyleEvent.StyleAction;
 import de.mbaaba.tools.shared.Style;
+import de.mbaaba.tools.shared.WordList;
+import de.mbaaba.tools.shared.WordTypes;
 
 public class MainWindow extends Composite {
+
+	private static Logger logger = Logger.getLogger(MainWindow.class);
 
 	private static final String VERSION_STRING = "0.3";
 	private static final String DEFAULT_THEME = "Hippie (deutsch)";
 	private HippieGen hippieGen;
 	private MenuBar styleMenuBar;
 	private InlineHTML styleDesription;
-	private WordListPanel wordListPanel;
+	// private WordListPanel wordListPanel;
 	private TextGeneratorPanel generatorPanel;
 	private Style currentStyle;
 
 	public MainWindow() {
 
 		/**
-		 * Create a remote service proxy to talk to the server-side Greeting
-		 * service.
+		 * Create a remote service proxy to talk to the server-side service.
 		 */
 
-		StyleManager.getInstance().addListener(new TypedListener<StyleEvent>() {
+		NotificationManager.getInstance().addListener(new TypedListener<StyleEvent>() {
 
 			@Override
 			public void notifyMe(StyleEvent aResult) {
@@ -46,8 +55,9 @@ public class MainWindow extends Composite {
 					currentStyle = aResult.style;
 					styleDesription.setHTML("<div align=left><h3>"
 							+ currentStyle.getName() + " - Style"
-							+ "</h3></div>&nbsp;" + currentStyle.getDescription());
-					
+							+ "</h3></div>&nbsp;"
+							+ currentStyle.getDescription());
+
 				default:
 					break;
 				}
@@ -60,9 +70,10 @@ public class MainWindow extends Composite {
 
 		hippieGen = new HippieGen();
 
-		final WaitBox box = new WaitBox("Please Wait", "Loading styles, please wait ...");
+		final WaitBox box = new WaitBox("Please Wait",
+				"Loading styles, please wait ...");
 		box.show();
-		
+
 		final Timer timer = new Timer() {
 
 			@Override
@@ -83,6 +94,7 @@ public class MainWindow extends Composite {
 
 					@Override
 					public void notifyFail(Throwable aCaught) {
+						System.out.println(aCaught);
 						schedule(1000);
 					}
 				});
@@ -133,8 +145,7 @@ public class MainWindow extends Composite {
 						}));
 			}
 		}
-		
-		
+
 	}
 
 	protected void loadStyle(String aStyleName) {
@@ -147,7 +158,7 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Style aStyle) {
-				StyleManager.getInstance().notifyChange(
+				NotificationManager.getInstance().fireStyleEvent(
 						new StyleEvent(aStyle, StyleAction.CHANGED));
 				box.hide();
 			}
@@ -203,17 +214,20 @@ public class MainWindow extends Composite {
 		HorizontalPanel centerPanel = new HorizontalPanel();
 		centerPanel.setSize("800px", "576px");
 
-		wordListPanel = new WordListPanel();
-		wordListPanel.setStyleName("gwt-StackPanel");
-		wordListPanel.setSize("30%", "100%");
+		// wordListPanel = new WordListPanel();
+		// wordListPanel.setStyleName("gwt-StackPanel");
+		// wordListPanel.setSize("30%", "100%");
+
+		WordCloud wordCloud = new WordCloud();
+		wordCloud.setSize("30%", "100%");
 
 		generatorPanel = new TextGeneratorPanel();
 		generatorPanel.setBorderWidth(0);
 		generatorPanel.setSize("70%", "100%");
 
-		centerPanel.setCellHeight(wordListPanel, "100%");
-		centerPanel.setCellWidth(wordListPanel, "300");
-		centerPanel.add(wordListPanel);
+		centerPanel.setCellHeight(wordCloud, "100%");
+		centerPanel.setCellWidth(wordCloud, "300");
+		centerPanel.add(wordCloud);
 
 		centerPanel.setCellHeight(generatorPanel, "100%");
 		centerPanel.setCellWidth(generatorPanel, "100%");
@@ -255,12 +269,27 @@ public class MainWindow extends Composite {
 
 		menuBar.addItem(miSave);
 
+		MenuItem miCreate = new MenuItem("New", false, new Command() {
+
+			@Override
+			public void execute() {
+				Map<WordTypes, WordList> map = new HashMap<WordTypes, WordList>();
+
+				Style style = new Style("Neuer Stil", "Please add description",
+						map);
+
+				newStyle(style);
+			}
+		});
+
+		menuBar.addItem(miCreate);
+
 		MenuItem miExport = new MenuItem("Import/Export", false, new Command() {
 
 			@Override
 			public void execute() {
-				if (currentStyle==null) {
-					currentStyle=new Style();
+				if (currentStyle == null) {
+					currentStyle = new Style();
 				}
 				ImportExportDialog importExportDialog = new ImportExportDialog(
 						currentStyle);
@@ -273,11 +302,38 @@ public class MainWindow extends Composite {
 		return menuItem;
 	}
 
+	protected void newStyle(Style aStyle) {
+		// wordListPanel.reparseWordLists();
+		final WaitBox box = new WaitBox("Please Wait", "Saving data ...");
+		box.show();
+
+		TypedListener<Boolean> listener = new TypedListener<Boolean>() {
+
+			@Override
+			public void notifyMe(Boolean aSuccess) {
+				NotificationManager.getInstance().fireStyleEvent(
+						new StyleEvent(currentStyle, StyleAction.SAVED));
+				box.hide();
+			}
+
+			@Override
+			public void notifyFail(Throwable aCaught) {
+				box.hide();
+				AlertBox alertBox = new AlertBox("Error",
+						"Could not save theme: " + aCaught.getMessage());
+				alertBox.show();
+			}
+		};
+		hippieGen.newStyle(aStyle, listener);
+
+	}
+
 	private MenuItem createHelpMenu() {
 		MenuBar menuBar = new MenuBar(true);
 		MenuItem menuItem = new MenuItem("Help", false, menuBar);
 
 		MenuItem mntmAbout = new MenuItem("About", false, new Command() {
+			@Override
 			public void execute() {
 				new AboutDialog();
 			}
@@ -287,7 +343,7 @@ public class MainWindow extends Composite {
 	}
 
 	private void saveStyle() {
-		wordListPanel.reparseWordLists();
+		// wordListPanel.reparseWordLists();
 		final WaitBox box = new WaitBox("Please Wait", "Saving data ...");
 		box.show();
 
@@ -295,7 +351,7 @@ public class MainWindow extends Composite {
 
 			@Override
 			public void notifyMe(Boolean aSuccess) {
-				StyleManager.getInstance().notifyChange(
+				NotificationManager.getInstance().fireStyleEvent(
 						new StyleEvent(currentStyle, StyleAction.SAVED));
 				box.hide();
 			}
