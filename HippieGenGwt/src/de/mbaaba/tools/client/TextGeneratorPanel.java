@@ -120,13 +120,9 @@ public class TextGeneratorPanel extends VerticalPanel {
 						numSentencesBox.getValue());
 				
 				
-				Audio audio = Audio.createIfSupported();
-				if (audio!=null) {
-					audio.setSrc("http://scottshuster.com/music/TheTypewriter-1950.mp3");
-					audio.play();
-				}
+
 				TextAddAnimation textAddAnimation = new TextAddAnimation(resultTextBox, s);
-				textAddAnimation.run(30000);
+				textAddAnimation.run(6000);
 			}
 		});
 		btnNewButton.setText("Create!");
