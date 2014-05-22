@@ -122,7 +122,7 @@ public class TextGeneratorPanel extends VerticalPanel {
 				
 
 				TextAddAnimation textAddAnimation = new TextAddAnimation(resultTextBox, s);
-				textAddAnimation.run(6000);
+				textAddAnimation.run(52000);
 			}
 		});
 		btnNewButton.setText("Create!");
