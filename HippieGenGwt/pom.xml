@@ -102,21 +102,21 @@
 			<artifactId>tagcloud.gdurelle</artifactId>
 			<version>0.4</version>
 			<scope>system</scope>
-			<systemPath>${project.build.directory}/../src/main/resources/libs/tagcloud_0.4.jar</systemPath>
+			<systemPath>${project.build.directory}/../libsToImport/tagcloud_0.4.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.log4j</groupId>
 			<artifactId>log4j-gwt</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>${project.build.directory}/../src/main/resources/libs/log4j-gwt.jar</systemPath>
+			<systemPath>${project.build.directory}/../libsToImport/log4j-gwt.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.allen_sauer.gwt.voices</groupId>
 			<artifactId>gwt-voices</artifactId>
 			<version>3.3.0</version>
 			<scope>system</scope>
-			<systemPath>${project.build.directory}/../src/main/resources/libs/gwt-voices-3.3.0.jar</systemPath>
+			<systemPath>${project.build.directory}/../libsToImport/gwt-voices-3.3.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
