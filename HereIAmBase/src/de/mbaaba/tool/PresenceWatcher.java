@@ -66,7 +66,7 @@ public class PresenceWatcher implements PresenceListener {
 
 	protected de.mbaaba.tool.DisplayMode displayMode;
 
-	private HereIAm presenceWatcher;
+	private HereIAm hereIAm;
 
 	protected Point movingOffset;
 
@@ -91,7 +91,7 @@ public class PresenceWatcher implements PresenceListener {
 		loadShellPos();
 		shell.pack();
 		loadImages();
-		presenceWatcher = new HereIAm(aConfigurator, this);
+		hereIAm = new HereIAm(aConfigurator, this);
 
 	}
 
@@ -249,6 +249,8 @@ public class PresenceWatcher implements PresenceListener {
 			}
 
 		});
+		itemSetStart.setText("Startzeit setzen");
+
 		miShellVisible = new MenuItem(popupMenu, SWT.CHECK);
 		miShellVisible.setText("Zeige Display");
 		miShellVisible.addListener(SWT.Selection, new Listener() {
@@ -263,7 +265,19 @@ public class PresenceWatcher implements PresenceListener {
 			}
 		});
 
-		itemSetStart.setText("Startzeit setzen");
+		MenuItem miShowHistory = new MenuItem(popupMenu, SWT.PUSH);
+		miShowHistory.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent aE) {
+				showHistory();
+			}
+
+		});
+		miShowHistory.setText("Zeige Daten");
+
+		
+		
 		new MenuItem(popupMenu, SWT.SEPARATOR);
 		MenuItem itemExit = new MenuItem(popupMenu, SWT.PUSH);
 		itemExit.addSelectionListener(new SelectionAdapter() {
@@ -277,6 +291,11 @@ public class PresenceWatcher implements PresenceListener {
 		itemExit.setText("Exit");
 
 		return popupMenu;
+	}
+
+	protected void showHistory() {
+		HistoryViewer historyViewer = new HistoryViewer(null);
+		historyViewer.open();
 	}
 
 	private void createDisplayModeMenuItem(Menu menu, final DisplayMode dm) {
@@ -346,7 +365,7 @@ public class PresenceWatcher implements PresenceListener {
 				}
 			}
 		};
-		InputDialog inputDialog = new InputDialog(shell, "Setze Startzeit", "Startzeit manuell setzen", sdf.format(presenceWatcher.getStartToday()), validator);
+		InputDialog inputDialog = new InputDialog(shell, "Setze Startzeit", "Startzeit manuell setzen", sdf.format(hereIAm.getStartToday()), validator);
 		int ret = inputDialog.open();
 		if (ret == InputDialog.OK) {
 			String h = inputDialog.getValue().substring(0, inputDialog.getValue().indexOf(":")).trim();
@@ -356,11 +375,12 @@ public class PresenceWatcher implements PresenceListener {
 			calendar.set(Calendar.MINUTE, Integer.parseInt(m));
 			calendar.set(Calendar.SECOND, 0);
 			long newTime = calendar.getTimeInMillis();
-			presenceWatcher.setStartTime(newTime);
+			hereIAm.setStartTime(newTime);
 		}
 
 	}
-
+	
+	
 	public void statusChange(final Activity aActivity) {
 //		shell.getDisplay().asyncExec(new Runnable() {
 //			public void run() {
@@ -376,10 +396,10 @@ public class PresenceWatcher implements PresenceListener {
 		switch (displayMode) {
 		case TIME_LEFT:
 
-			if (presenceWatcher.getActivity() == Activity.IDLE) {
-				val = presenceWatcher.getEndToday() - presenceWatcher.getLastActivity();
+			if (hereIAm.getActivity() == Activity.IDLE) {
+				val = hereIAm.getEndToday() - hereIAm.getLastActivity();
 			} else {
-				val = presenceWatcher.getEndToday() - System.currentTimeMillis();
+				val = hereIAm.getEndToday() - System.currentTimeMillis();
 			}
 			if (val < 0) {
 				temp = "+" + DurationFormatUtils.formatDuration(-val, TIME_FORMAT);
@@ -388,24 +408,24 @@ public class PresenceWatcher implements PresenceListener {
 			}
 			break;
 		case IDLE_SINCE:
-			temp = sdf.format(presenceWatcher.getLastActivity());
+			temp = sdf.format(hereIAm.getLastActivity());
 			break;
 
 		case TIME_PASSED:
-			if (presenceWatcher.getActivity() == Activity.IDLE) {
-				val = (presenceWatcher.getLastActivity() - presenceWatcher.getStartToday());
+			if (hereIAm.getActivity() == Activity.IDLE) {
+				val = (hereIAm.getLastActivity() - hereIAm.getStartToday());
 			} else {
-				val = (System.currentTimeMillis() - presenceWatcher.getStartToday());
+				val = (System.currentTimeMillis() - hereIAm.getStartToday());
 			}
 			temp = DurationFormatUtils.formatDuration(val, TIME_FORMAT);
 			break;
 
 		case TIME_STARTED:
-			temp = sdf.format(new Date(presenceWatcher.getStartToday()));
+			temp = sdf.format(new Date(hereIAm.getStartToday()));
 			break;
 
 		case TIME_FINISHED:
-			temp = sdf.format(presenceWatcher.getEndToday());
+			temp = sdf.format(hereIAm.getEndToday());
 			break;
 
 		default:
@@ -420,7 +440,7 @@ public class PresenceWatcher implements PresenceListener {
 				public void run() {
 					trayItem.setToolTipText(displayMode.getMsg()+": "+newStatusString);
 					lbStatus.setText(newStatusString);
-					if (presenceWatcher.getEndToday() - System.currentTimeMillis() < 0) {
+					if (hereIAm.getEndToday() - System.currentTimeMillis() < 0) {
 						// did my work today
 						setColorScheme(SWT.COLOR_GREEN);
 					} else {
@@ -440,8 +460,8 @@ public class PresenceWatcher implements PresenceListener {
 		File appdata = new File(homeFile, "PresenceWatcher.properties");
 
 		Configurator configurator = new PropertyFileConfigurator(appdata.getCanonicalPath());
-		PresenceWatcher hereIAmDisplay = new PresenceWatcher(configurator);
-		hereIAmDisplay.run();
+		PresenceWatcher presenceWatcher = new PresenceWatcher(configurator);
+		presenceWatcher.run();
 
 	}
 
