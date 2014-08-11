@@ -39,4 +39,6 @@ public interface Configurator {
 	 *
 	 */
 	public void setProperty(String aPropertyName, String aValue);
+
+	public boolean saveProperties();
 }

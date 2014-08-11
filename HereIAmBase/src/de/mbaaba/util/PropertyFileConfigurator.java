@@ -10,6 +10,8 @@ package de.mbaaba.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -35,12 +37,25 @@ public class PropertyFileConfigurator implements Configurator {
 		propFileName = aPropFileName;
 		readProperties();
 	}
+	
+	
+	public boolean saveProperties() {
+		File f = new File(propFileName);
+		try {
+			props.save(new FileOutputStream(f),"");
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
 
 	/**
 	 * Reads configuration properties from the file "adapter.properties". This
 	 * file must reside anywhere in the classpath.
 	 */
-	public void readProperties() {
+	public boolean readProperties() {
 		props = new Properties();
 		try {
 			File f = new File(propFileName);
@@ -56,13 +71,12 @@ public class PropertyFileConfigurator implements Configurator {
 
 			if (resourceStream != null) {
 				props.load(resourceStream);
+				return true;
 			}
+			
 		} catch (IOException e) {
-			printerr("The file " + propFileName + " could not be found!", e);
-			printerr("Copy the template-property file, make your changes and rename it to " + propFileName + ".");
-			printerr("I will exit now.");
-			System.exit(1);
 		}
+		return false;
 	}
 
 	private void printerr(String aString, Exception aE) {

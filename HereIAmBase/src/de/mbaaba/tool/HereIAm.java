@@ -212,22 +212,22 @@ public class HereIAm {
 		logger.info(msg);
 	}
 
-	public static void main(String[] args) throws InterruptedException, IOException {
-		Configurator configurator = new PropertyFileConfigurator("HereIAm.properties");
-		new HereIAm(configurator, new PresenceListener() {
-
-			public void timeChange() {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void statusChange(Activity aActivity) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-		Thread.sleep(Long.MAX_VALUE);
-	}
+//	public static void main(String[] args) throws InterruptedException, IOException {
+//		Configurator configurator = new PropertyFileConfigurator("HereIAm.properties");
+//		new HereIAm(configurator, new PresenceListener() {
+//
+//			public void timeChange() {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			public void statusChange(Activity aActivity) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//		});
+//		Thread.sleep(Long.MAX_VALUE);
+//	}
 
 	public void setStartTime(long aTime) {
 		// manual setting of start time
