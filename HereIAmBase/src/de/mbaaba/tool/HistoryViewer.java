@@ -7,14 +7,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -27,11 +23,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 
 import de.mbaaba.tool.pw.data.WorktimeContentProvider;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
@@ -42,14 +36,13 @@ public class HistoryViewer extends Dialog {
 	private DataBindingContext m_bindingContext;
 	private Table table;
 	private TableViewer tableViewer;
-	private Text startTime;
-	private Text endTime;
 
 	private WorktimeEntry currentWorktimeEntry;
 	private LogfileDataStorage dataStorage;
 	private DateTime startDate;
 
 	private WorktimeContentProvider worktimeContentProvider;
+	private WorktimeLabelProvider labelProvider;
 
 	/**
 	 * Create the dialog.
@@ -58,10 +51,22 @@ public class HistoryViewer extends Dialog {
 	 */
 	public HistoryViewer(Shell parentShell) {
 		super(parentShell);
-		dataStorage = new LogfileDataStorage(new File("testdata"));
+		worktimeContentProvider = new WorktimeContentProvider();
+		labelProvider = new WorktimeLabelProvider();
+
+		String home = System.getProperty("user.home");
+		File homeFile=new File(home+"/.presenceWatcher");		
+		
+		dataStorage = new LogfileDataStorage(homeFile);
+		setShellStyle(getShellStyle() | SWT.RESIZE);
 		
 	}
 
+	protected void configureShell(Shell shell) {
+	      super.configureShell(shell);
+	      shell.setText("Zeige Historie");
+	   }	
+	
 	/**
 	 * Create contents of the dialog.
 	 * 
@@ -71,14 +76,14 @@ public class HistoryViewer extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gridLayout = (GridLayout) container.getLayout();
-		gridLayout.numColumns = 4;
+		gridLayout.numColumns = 2;
 
 		startDate = new DateTime(container, SWT.CALENDAR);
 		startDate.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
 				1, 1));
 
 		startDate.addSelectionListener(new SelectionAdapter() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				Calendar cal = new GregorianCalendar();
@@ -87,36 +92,20 @@ public class HistoryViewer extends Dialog {
 				cal.set(Calendar.YEAR, startDate.getYear());
 				setStartDate(cal.getTime());
 			}
-			
-		});
-		
-		
-		startTime = new Text(container, SWT.BORDER);
-		startTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
 
-		endTime = new Text(container, SWT.BORDER);
-		endTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
-		new Label(container, SWT.NONE);
+		});
 
 		tableViewer = new TableViewer(container, SWT.BORDER
 				| SWT.FULL_SELECTION);
-		
-		worktimeContentProvider = new WorktimeContentProvider();
-		tableViewer.setLabelProvider(new WorktimeLabelProvider());
-		tableViewer.setContentProvider(worktimeContentProvider);
-		
-		
-		tableViewer.getTable().setLinesVisible(true);
-		tableViewer.getTable().setHeaderVisible(true);		
-		
-		table = tableViewer.getTable();
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 
-		
-		
-		
+		tableViewer.getTable().setLinesVisible(true);
+		tableViewer.getTable().setHeaderVisible(true);
+
+		table = tableViewer.getTable();
+		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_table.heightHint = 143;
+		table.setLayoutData(gd_table);
+
 		TableViewerColumn tableViewerColumn = new TableViewerColumn(
 				tableViewer, SWT.NONE);
 		TableColumn colDate = tableViewerColumn.getColumn();
@@ -134,6 +123,10 @@ public class HistoryViewer extends Dialog {
 		TableColumn colEnd = tableViewerColumn_1.getColumn();
 		colEnd.setWidth(100);
 		colEnd.setText("Ende");
+
+		tableViewer.setLabelProvider(labelProvider);
+		tableViewer.setContentProvider(worktimeContentProvider);
+
 
 		return container;
 	}
@@ -157,7 +150,7 @@ public class HistoryViewer extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(450, 300);
+		return new Point(720, 274);
 	}
 
 	protected void setStartDate(Date aDate) {
@@ -173,38 +166,19 @@ public class HistoryViewer extends Dialog {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(currentWorktimeEntry.getDate());
 		WorktimeEntry[] elements = new WorktimeEntry[7];
-		for( int i = 0; i < elements.length; i++ ) {
-			cal.set(Calendar.DAY_OF_WEEK, (i+2) % 7);
+		for (int i = 0; i < elements.length; i++) {
+			cal.set(Calendar.DAY_OF_WEEK, (i + 2) % 7);
 			Date thisDate = cal.getTime();
 			elements[i] = dataStorage.getWorktimeEntry(thisDate);
 		}
 		try {
 			tableViewer.setInput(elements);
+			tableViewer.setItemCount(7);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	protected DataBindingContext initDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
-		//
-		IObservableValue observeTextStartTimeObserveWidget = WidgetProperties
-				.text(SWT.Modify).observe(startTime);
-		IObservableValue startTimeCurrentWorktimeEntryObserveValue = PojoProperties
-				.value("startTime").observe(currentWorktimeEntry);
-		bindingContext.bindValue(observeTextStartTimeObserveWidget,
-				startTimeCurrentWorktimeEntryObserveValue, null, null);
-		//
-		IObservableValue observeTextEndTimeObserveWidget = WidgetProperties
-				.text(SWT.Modify).observe(endTime);
-		IObservableValue endTimeCurrentWorktimeEntryObserveValue = PojoProperties
-				.value("endTime").observe(currentWorktimeEntry);
-		bindingContext.bindValue(observeTextEndTimeObserveWidget,
-				endTimeCurrentWorktimeEntryObserveValue, null, null);
-		//
-
-		return bindingContext;
 	}
 
 	// -----------------
@@ -230,5 +204,20 @@ public class HistoryViewer extends Dialog {
 
 		d.dispose();
 
+	}
+	
+	public static void openViewer(final Shell s) {
+		Realm.runWithDefault(SWTObservables.getRealm(s.getDisplay()), new Runnable() {
+			public void run() {
+				HistoryViewer historyViewer = new HistoryViewer(s);
+				historyViewer.open();
+			}
+		});		
+	}
+
+	protected DataBindingContext initDataBindings() {
+		DataBindingContext bindingContext = new DataBindingContext();
+		//
+		return bindingContext;
 	}
 }

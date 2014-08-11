@@ -1,11 +1,19 @@
 package de.mbaaba.tool.pw.data;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
-public class WorktimeLabelProvider extends LabelProvider implements
+public class WorktimeLabelProvider extends CellLabelProvider implements
 		ITableLabelProvider {
+
+	private static final DateFormat DATE_ONLY = new SimpleDateFormat(
+			"dd.MM.yyyy (E)");
+	private static final DateFormat TIME_ONLY = new SimpleDateFormat("HH:mm");
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -17,16 +25,35 @@ public class WorktimeLabelProvider extends LabelProvider implements
 		WorktimeEntry we = (WorktimeEntry) element;
 		switch (columnIndex) {
 		case 0:
-			return we.getDate().toString();
+			if (we.getDate() != null)
+				return DATE_ONLY.format(we.getDate());
+			break;
 		case 1:
-			return we.getStartTime().toString();
+			if (we.getStartTime() != null) {
+				return TIME_ONLY.format(we.getStartTime());
+			}
+			break;
 		case 2:
-			return we.getEndTime().toString();
+			if (we.getEndTime() != null) {
+				return TIME_ONLY.format(we.getEndTime());
+			}
+			break;
+		case 3:
+			if (we.getComment() != null) {
+				return we.getComment();
+			}
+			break;
 
 		default:
 			break;
 		}
-		return null;
+		return "";
+	}
+
+	@Override
+	public void update(ViewerCell cell) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

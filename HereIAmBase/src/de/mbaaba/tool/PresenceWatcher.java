@@ -20,6 +20,8 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -84,14 +86,29 @@ public class PresenceWatcher implements PresenceListener {
 
 	private MenuItem miShellVisible;
 
-	public PresenceWatcher(Configurator aConfigurator) throws IOException, InterruptedException {
-		configurator = aConfigurator;
+	public PresenceWatcher() throws IOException, InterruptedException {
+		String home = System.getProperty("user.home");
+		File homeFile = new File(home + "/.presenceWatcher");
+		homeFile.mkdirs();
+		File appdata = new File(homeFile, "PresenceWatcher.properties");		
+		configurator = new PropertyFileConfigurator(appdata.getCanonicalPath());
+		
+		Thread hook = new Thread() {
+			@Override
+			public void run() {
+				super.run();
+				configurator.saveProperties();
+				
+			}
+		};
+		Runtime.getRuntime().addShutdownHook(hook);		
+		
 		displayMode = DisplayMode.TIME_LEFT;
 		createGui();
 		loadShellPos();
 		shell.pack();
 		loadImages();
-		hereIAm = new HereIAm(aConfigurator, this);
+		hereIAm = new HereIAm(configurator, this);
 
 	}
 
@@ -274,7 +291,7 @@ public class PresenceWatcher implements PresenceListener {
 			}
 
 		});
-		miShowHistory.setText("Zeige Daten");
+		miShowHistory.setText("Zeige Historie");
 
 		
 		
@@ -294,8 +311,7 @@ public class PresenceWatcher implements PresenceListener {
 	}
 
 	protected void showHistory() {
-		HistoryViewer historyViewer = new HistoryViewer(null);
-		historyViewer.open();
+		HistoryViewer.openViewer(shell);
 	}
 
 	private void createDisplayModeMenuItem(Menu menu, final DisplayMode dm) {
@@ -454,18 +470,13 @@ public class PresenceWatcher implements PresenceListener {
 	}
 
 	public static void main(String[] args) throws InterruptedException, IOException {
-		String home = System.getProperty("user.home");
-		File homeFile = new File(home + "/.presenceWatcher");
-		homeFile.mkdirs();
-		File appdata = new File(homeFile, "PresenceWatcher.properties");
-
-		Configurator configurator = new PropertyFileConfigurator(appdata.getCanonicalPath());
-		PresenceWatcher presenceWatcher = new PresenceWatcher(configurator);
+		PresenceWatcher presenceWatcher = new PresenceWatcher();
 		presenceWatcher.run();
 
 	}
 
 	private void run() {
+
 		while (!shell.isDisposed()) {
 			if (!getDisplay().readAndDispatch()) {
 				getDisplay().sleep();
