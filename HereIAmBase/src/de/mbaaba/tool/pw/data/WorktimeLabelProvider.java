@@ -2,6 +2,7 @@ package de.mbaaba.tool.pw.data;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -11,9 +12,6 @@ import org.eclipse.swt.graphics.Image;
 public class WorktimeLabelProvider extends CellLabelProvider implements
 		ITableLabelProvider {
 
-	private static final DateFormat DATE_ONLY = new SimpleDateFormat(
-			"dd.MM.yyyy (E)");
-	private static final DateFormat TIME_ONLY = new SimpleDateFormat("HH:mm");
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -26,19 +24,45 @@ public class WorktimeLabelProvider extends CellLabelProvider implements
 		switch (columnIndex) {
 		case 0:
 			if (we.getDate() != null)
-				return DATE_ONLY.format(we.getDate());
+				return WorktimeEntryUtils.DATE_ONLY.format(we.getDate());
 			break;
 		case 1:
 			if (we.getStartTime() != null) {
-				return TIME_ONLY.format(we.getStartTime());
+				return WorktimeEntryUtils.TIME_ONLY.format(we.getStartTime());
 			}
 			break;
 		case 2:
 			if (we.getEndTime() != null) {
-				return TIME_ONLY.format(we.getEndTime());
+				return WorktimeEntryUtils.TIME_ONLY.format(we.getEndTime());
 			}
 			break;
 		case 3:
+			int breakTime = WorktimeEntryUtils.getBreaktimeMinutes(we);
+			if (breakTime > 0) {
+				return WorktimeEntryUtils.formatMinutes(breakTime);
+			}
+			break;
+		case 4:
+			int time = WorktimeEntryUtils.getNetWorktimeInMinutes(we);
+			if (time > 0) {
+				return WorktimeEntryUtils.formatMinutes(time);
+			}
+			break;
+		case 5:
+			int planned = we.getPlanned();
+			if (planned > 0) {
+				return WorktimeEntryUtils.formatMinutes(planned);
+			}
+			break;
+
+		case 6:
+			time = WorktimeEntryUtils.getNetWorktimeInMinutes(we);
+			if (time > 0) {
+				return WorktimeEntryUtils.formatMinutes(time - we.getPlanned());
+			}
+			break;
+
+		case 7:
 			if (we.getComment() != null) {
 				return we.getComment();
 			}

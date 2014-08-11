@@ -45,6 +45,7 @@ public class LogfileDataStorage implements DataStorage {
 	}
 
 	private Date getStartTime(Date aWhatDate) {
+		Date earliest = null;
 		File logfile;
 		// if we are looking for the startDate of tody, we have to look in the
 		// current logfile!
@@ -71,7 +72,9 @@ public class LogfileDataStorage implements DataStorage {
 					try {
 						Date parsed = DATE_AND_TIME.parse(line);
 						if (isSameDate(aWhatDate, parsed)) {
-							return parsed;
+							if ((earliest == null) || (parsed.before(earliest))) {
+								earliest = parsed;
+							}
 						}
 					} catch (ParseException e) {
 						// try again with next line if parse failed
@@ -87,13 +90,15 @@ public class LogfileDataStorage implements DataStorage {
 			// No start date because we cannot access the logfile for that day.
 			return null;
 		}
-		return null;
+		return earliest;
 	}
 
 	private Date getEndTime(Date aWhatDate) {
+
 		// first, try with the logfile of the date we are looking for.
 		String filename = "PresenceWatcher.log." + DATE_ONLY.format(aWhatDate);
 		Date res = getEOWfromFile(aWhatDate, filename);
+
 		if (res == null) {
 			// if no EOW found, try the logfile of the next day
 			filename = "PresenceWatcher.log."
@@ -110,6 +115,8 @@ public class LogfileDataStorage implements DataStorage {
 	}
 
 	private Date getEOWfromFile(Date aWhatDate, String filename) {
+		Date latest = null;
+
 		File logfile = new File(directory, filename);
 		try (BufferedReader fr = new BufferedReader(new FileReader(logfile))) {
 			String line = fr.readLine();
@@ -121,10 +128,13 @@ public class LogfileDataStorage implements DataStorage {
 					try {
 						Date parsed = DATE_AND_TIME.parse(line);
 						if (isSameDate(parsed, aWhatDate)) {
-							// if this EOW-line is the the one for the same
-							// day-of-week as the one we are looking for, and
-							// NOT for the day before ...
-							return parsed;
+							if ((latest == null) || (parsed.after(latest))) {
+								// if this EOW-line is the the one for the same
+								// day-of-week as the one we are looking for,
+								// and
+								// NOT for the day before ...
+								latest = parsed;
+							}
 						}
 					} catch (ParseException e) {
 						// try again with next line if parse failed
@@ -139,12 +149,11 @@ public class LogfileDataStorage implements DataStorage {
 			// No start date because we cannot access the logfile for that day.
 			return null;
 		}
-		return null;
+		return latest;
 	}
 
-
 	@Override
-	public WorktimeEntry getWorktimeEntry(Date aDate)  {
+	public WorktimeEntry getWorktimeEntry(Date aDate) {
 		WorktimeEntry res = new WorktimeEntry();
 		res.setDate(aDate);
 		res.setStartTime(getStartTime(aDate));
@@ -152,12 +161,10 @@ public class LogfileDataStorage implements DataStorage {
 		return res;
 	}
 
-
-
 	@Override
 	public void saveWorktimeEntry(WorktimeEntry aWorktimeEntry) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -60,28 +60,23 @@ public class LogfileDataStorageTest {
 
 	@Test
 	public void testGetStartAndEndTwoFilesCurrent() throws ParseException {
-		// 28.7. has the start in one file and the end in the logfile of the
-		// next day
 		LogfileDataStorage logfileDataStorage = new LogfileDataStorage(
 				new File("testdata"));
 		WorktimeEntry worktimeEntry = logfileDataStorage
 				.getWorktimeEntry(DATE_ONLY.parse("2014-08-07"));
-		Assert.assertEquals("07.08.2014 09:00:00",
+		Assert.assertEquals("07.08.2014 06:47:00",
 				DATE_AND_TIME.format(worktimeEntry.getStartTime()));
-		Assert.assertEquals("07.08.2014 18:00:00",
+		Assert.assertEquals("07.08.2014 21:00:00",
 				DATE_AND_TIME.format(worktimeEntry.getEndTime()));
 	}
 
 	@Test
-	public void testUnknownEnd() throws ParseException {
-		// 28.7. has the start in one file and the end in the logfile of the
-		// next day
+	public void testUnknownStartAndEnd() throws ParseException {
 		LogfileDataStorage logfileDataStorage = new LogfileDataStorage(
 				new File("testdata"));
 		WorktimeEntry worktimeEntry = logfileDataStorage
 				.getWorktimeEntry(DATE_ONLY.parse("2014-08-08"));
-		Assert.assertEquals("08.08.2014 11:10:21",
-				DATE_AND_TIME.format((worktimeEntry.getStartTime())));
+		Assert.assertNull(worktimeEntry.getStartTime());
 		Assert.assertNull(worktimeEntry.getEndTime());
 	}
 

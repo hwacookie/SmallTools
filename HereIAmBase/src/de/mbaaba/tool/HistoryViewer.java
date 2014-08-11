@@ -17,12 +17,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -61,6 +65,12 @@ public class HistoryViewer extends Dialog {
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		
 	}
+	
+	@Override
+	public void create() {
+		super.create();
+		setStartDate(new Date());
+	}
 
 	protected void configureShell(Shell shell) {
 	      super.configureShell(shell);
@@ -98,32 +108,88 @@ public class HistoryViewer extends Dialog {
 		tableViewer = new TableViewer(container, SWT.BORDER
 				| SWT.FULL_SELECTION);
 
+		
 		tableViewer.getTable().setLinesVisible(true);
 		tableViewer.getTable().setHeaderVisible(true);
 
 		table = tableViewer.getTable();
+
+		Menu popupMenu = new Menu(table);
+		MenuItem miOpenEditor = new MenuItem(popupMenu, SWT.PUSH);
+		miOpenEditor.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				int selectionIndex = table.getSelectionIndex();
+				Object[] elements = worktimeContentProvider.getElements(null);
+				WorktimeEntry we = (WorktimeEntry) elements[selectionIndex];
+				//WorktimeEntryEditor editor = new WorktimeEntryEditor(HistoryViewer.this.getShell());
+				
+			}
+		});
+		table.setMenu(popupMenu);
+		
+		
+		
 		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd_table.heightHint = 143;
 		table.setLayoutData(gd_table);
 
-		TableViewerColumn tableViewerColumn = new TableViewerColumn(
+		TableViewerColumn tvcDate = new TableViewerColumn(
 				tableViewer, SWT.NONE);
-		TableColumn colDate = tableViewerColumn.getColumn();
+		TableColumn colDate = tvcDate.getColumn();
 		colDate.setWidth(100);
 		colDate.setText("Datum");
 
-		TableViewerColumn tableViewerColumn_2 = new TableViewerColumn(
+		TableViewerColumn tvcStart = new TableViewerColumn(
 				tableViewer, SWT.NONE);
-		TableColumn colStart = tableViewerColumn_2.getColumn();
+		TableColumn colStart = tvcStart.getColumn();
 		colStart.setWidth(100);
 		colStart.setText("Startzeit");
 
-		TableViewerColumn tableViewerColumn_1 = new TableViewerColumn(
+		TableViewerColumn tvcEnd = new TableViewerColumn(
 				tableViewer, SWT.NONE);
-		TableColumn colEnd = tableViewerColumn_1.getColumn();
+		TableColumn colEnd = tvcEnd.getColumn();
 		colEnd.setWidth(100);
 		colEnd.setText("Ende");
 
+		TableViewerColumn tvcBrake = new TableViewerColumn(
+				tableViewer, SWT.NONE);
+		TableColumn colBrake = tvcBrake.getColumn();
+		colBrake.setWidth(100);
+		colBrake.setText("Pause");
+		
+		TableViewerColumn tvcSum = new TableViewerColumn(
+				tableViewer, SWT.NONE);
+		TableColumn colSum = tvcSum.getColumn();
+		colSum.setWidth(100);
+		colSum.setText("Arbeitszeit");		
+		new Label(container, SWT.NONE);
+		
+		TableViewerColumn tvcPlan = new TableViewerColumn(
+				tableViewer, SWT.NONE);
+		TableColumn colPlan = tvcPlan.getColumn();
+		colPlan.setWidth(100);
+		colPlan.setText("Plan");		
+		new Label(container, SWT.NONE);
+		
+		TableViewerColumn tvcBalance = new TableViewerColumn(
+				tableViewer, SWT.NONE);
+		TableColumn colBalance = tvcBalance.getColumn();
+		colBalance.setWidth(100);
+		colBalance.setText("Saldo");		
+		new Label(container, SWT.NONE);
+		
+		Composite composite = new Composite(container, SWT.NONE);
+		FillLayout fl_composite = new FillLayout(SWT.HORIZONTAL);
+		fl_composite.spacing = 5;
+		composite.setLayout(fl_composite);
+		
+		Label lblWochensaldo = new Label(composite, SWT.NONE);
+		lblWochensaldo.setText("Wochensaldo:");
+		
+		Label lblNewLabel = new Label(composite, SWT.NONE);
+		lblNewLabel.setText("0");
+		
 		tableViewer.setLabelProvider(labelProvider);
 		tableViewer.setContentProvider(worktimeContentProvider);
 
@@ -150,7 +216,7 @@ public class HistoryViewer extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(720, 274);
+		return new Point(749, 331);
 	}
 
 	protected void setStartDate(Date aDate) {

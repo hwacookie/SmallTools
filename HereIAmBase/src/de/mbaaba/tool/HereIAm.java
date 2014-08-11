@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
 import de.mbaaba.util.Configurator;
-import de.mbaaba.util.PropertyFileConfigurator;
 import de.mbaaba.util.Units;
 
 public class HereIAm {

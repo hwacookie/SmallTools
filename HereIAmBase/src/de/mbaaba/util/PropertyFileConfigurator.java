@@ -79,10 +79,6 @@ public class PropertyFileConfigurator implements Configurator {
 		return false;
 	}
 
-	private void printerr(String aString, Exception aE) {
-		printerr(aString + ": " + aE.getMessage());
-	}
-
 	/**
 	 * {@inheritDoc}
 	 * 

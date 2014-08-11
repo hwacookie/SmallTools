@@ -17,11 +17,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -72,7 +72,8 @@ public class PresenceWatcher implements PresenceListener {
 
 	protected Point movingOffset;
 
-	protected static final long WORK_TIME_PER_DAY = 8 * Units.HOUR + 45 * Units.MINUTE;
+	protected static final long WORK_TIME_PER_DAY = 8 * Units.HOUR + 45
+			* Units.MINUTE;
 
 	private final Configurator configurator;
 
@@ -90,19 +91,19 @@ public class PresenceWatcher implements PresenceListener {
 		String home = System.getProperty("user.home");
 		File homeFile = new File(home + "/.presenceWatcher");
 		homeFile.mkdirs();
-		File appdata = new File(homeFile, "PresenceWatcher.properties");		
+		File appdata = new File(homeFile, "PresenceWatcher.properties");
 		configurator = new PropertyFileConfigurator(appdata.getCanonicalPath());
-		
+
 		Thread hook = new Thread() {
 			@Override
 			public void run() {
 				super.run();
 				configurator.saveProperties();
-				
+
 			}
 		};
-		Runtime.getRuntime().addShutdownHook(hook);		
-		
+		Runtime.getRuntime().addShutdownHook(hook);
+
 		displayMode = DisplayMode.TIME_LEFT;
 		createGui();
 		loadShellPos();
@@ -119,7 +120,7 @@ public class PresenceWatcher implements PresenceListener {
 			System.out.println("The system tray is not available");
 		} else {
 			trayItem = new TrayItem(tray, SWT.NONE);
-			//trayItem.setToolTipText("Presence Watcher - IDLE");
+			// trayItem.setToolTipText("Presence Watcher - IDLE");
 			trayItem.addListener(SWT.Show, new Listener() {
 				public void handleEvent(Event event) {
 				}
@@ -149,7 +150,8 @@ public class PresenceWatcher implements PresenceListener {
 	}
 
 	private void loadImages() {
-		InputStream is = getClass().getClassLoader().getResourceAsStream("images/green.ico");
+		InputStream is = getClass().getClassLoader().getResourceAsStream(
+				"images/green.ico");
 		iconGreen = new Image(display, is);
 		is = getClass().getClassLoader().getResourceAsStream("images/red.ico");
 		iconRed = new Image(display, is);
@@ -215,7 +217,8 @@ public class PresenceWatcher implements PresenceListener {
 		lbStatus.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				if (movingOffset != null) {
-					Point newShellPos = lbStatus.toDisplay(e.x - movingOffset.x, e.y - movingOffset.y);
+					Point newShellPos = lbStatus.toDisplay(
+							e.x - movingOffset.x, e.y - movingOffset.y);
 					shell.setLocation(newShellPos);
 					saveShellPos();
 
@@ -241,7 +244,8 @@ public class PresenceWatcher implements PresenceListener {
 		};
 
 		lbStatus.addMouseListener(mouseAdapter);
-		String shellVisible = configurator.getProperty(SHELL_VISIBLE, Boolean.TRUE.toString());
+		String shellVisible = configurator.getProperty(SHELL_VISIBLE,
+				Boolean.TRUE.toString());
 		shell.setVisible(Boolean.valueOf(shellVisible));
 		miShellVisible.setSelection(shell.isVisible());
 
@@ -278,7 +282,8 @@ public class PresenceWatcher implements PresenceListener {
 				} else {
 					shell.setVisible(false);
 				}
-				configurator.setProperty(SHELL_VISIBLE, Boolean.toString(shell.isVisible()));
+				configurator.setProperty(SHELL_VISIBLE,
+						Boolean.toString(shell.isVisible()));
 			}
 		});
 
@@ -293,15 +298,17 @@ public class PresenceWatcher implements PresenceListener {
 		});
 		miShowHistory.setText("Zeige Historie");
 
-		
-		
 		new MenuItem(popupMenu, SWT.SEPARATOR);
 		MenuItem itemExit = new MenuItem(popupMenu, SWT.PUSH);
 		itemExit.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent aE) {
-				System.exit(1);
+				boolean reallyQuit = MessageDialog.openQuestion(null,
+						"Sicher?", "Wollen Sie wirklich beenden?");
+				if (reallyQuit) {
+					System.exit(1);
+				}
 			}
 
 		});
@@ -324,7 +331,7 @@ public class PresenceWatcher implements PresenceListener {
 			}
 
 		});
-		item.setText(dm.getMsg()+" ...");
+		item.setText(dm.getMsg() + " ...");
 	}
 
 	private void setColorScheme(final int aColor) {
@@ -340,7 +347,8 @@ public class PresenceWatcher implements PresenceListener {
 						setTrayImage(iconGreen);
 						fg = SWT.COLOR_BLACK;
 					}
-					composite.setBackground(getDisplay().getSystemColor(aColor));
+					composite
+							.setBackground(getDisplay().getSystemColor(aColor));
 					lbStatus.setBackground(getDisplay().getSystemColor(aColor));
 					lbStatus.setForeground(getDisplay().getSystemColor(fg));
 
@@ -381,11 +389,15 @@ public class PresenceWatcher implements PresenceListener {
 				}
 			}
 		};
-		InputDialog inputDialog = new InputDialog(shell, "Setze Startzeit", "Startzeit manuell setzen", sdf.format(hereIAm.getStartToday()), validator);
+		InputDialog inputDialog = new InputDialog(shell, "Setze Startzeit",
+				"Startzeit manuell setzen",
+				sdf.format(hereIAm.getStartToday()), validator);
 		int ret = inputDialog.open();
 		if (ret == InputDialog.OK) {
-			String h = inputDialog.getValue().substring(0, inputDialog.getValue().indexOf(":")).trim();
-			String m = inputDialog.getValue().substring(inputDialog.getValue().indexOf(":") + 1).trim();
+			String h = inputDialog.getValue()
+					.substring(0, inputDialog.getValue().indexOf(":")).trim();
+			String m = inputDialog.getValue()
+					.substring(inputDialog.getValue().indexOf(":") + 1).trim();
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(h));
 			calendar.set(Calendar.MINUTE, Integer.parseInt(m));
@@ -395,14 +407,13 @@ public class PresenceWatcher implements PresenceListener {
 		}
 
 	}
-	
-	
+
 	public void statusChange(final Activity aActivity) {
-//		shell.getDisplay().asyncExec(new Runnable() {
-//			public void run() {
-//				trayItem.setToolTipText("Presence Watcher - " + aActivity);
-//			}
-//		});
+		// shell.getDisplay().asyncExec(new Runnable() {
+		// public void run() {
+		// trayItem.setToolTipText("Presence Watcher - " + aActivity);
+		// }
+		// });
 	}
 
 	public void timeChange() {
@@ -418,9 +429,11 @@ public class PresenceWatcher implements PresenceListener {
 				val = hereIAm.getEndToday() - System.currentTimeMillis();
 			}
 			if (val < 0) {
-				temp = "+" + DurationFormatUtils.formatDuration(-val, TIME_FORMAT);
+				temp = "+"
+						+ DurationFormatUtils.formatDuration(-val, TIME_FORMAT);
 			} else {
-				temp = "-" + DurationFormatUtils.formatDuration(val, TIME_FORMAT);
+				temp = "-"
+						+ DurationFormatUtils.formatDuration(val, TIME_FORMAT);
 			}
 			break;
 		case IDLE_SINCE:
@@ -447,14 +460,15 @@ public class PresenceWatcher implements PresenceListener {
 		default:
 			break;
 		}
-		
+
 		display = getDisplay();
 		if (display != null) {
 			final String newStatusString = temp;
 			getDisplay().asyncExec(new Runnable() {
 
 				public void run() {
-					trayItem.setToolTipText(displayMode.getMsg()+": "+newStatusString);
+					trayItem.setToolTipText(displayMode.getMsg() + ": "
+							+ newStatusString);
 					lbStatus.setText(newStatusString);
 					if (hereIAm.getEndToday() - System.currentTimeMillis() < 0) {
 						// did my work today
@@ -469,7 +483,8 @@ public class PresenceWatcher implements PresenceListener {
 
 	}
 
-	public static void main(String[] args) throws InterruptedException, IOException {
+	public static void main(String[] args) throws InterruptedException,
+			IOException {
 		PresenceWatcher presenceWatcher = new PresenceWatcher();
 		presenceWatcher.run();
 
