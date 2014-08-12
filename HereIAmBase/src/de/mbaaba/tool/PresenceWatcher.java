@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -304,7 +303,7 @@ public class PresenceWatcher implements PresenceListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent aE) {
-				boolean reallyQuit = MessageDialog.openQuestion(null,
+				boolean reallyQuit = MessageDialog.openQuestion(shell,
 						"Sicher?", "Wollen Sie wirklich beenden?");
 				if (reallyQuit) {
 					System.exit(1);

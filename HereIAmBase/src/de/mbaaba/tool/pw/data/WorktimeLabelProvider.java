@@ -1,9 +1,5 @@
 package de.mbaaba.tool.pw.data;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;

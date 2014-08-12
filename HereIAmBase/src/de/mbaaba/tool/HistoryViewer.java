@@ -108,7 +108,6 @@ public class HistoryViewer extends Dialog {
 		tableViewer = new TableViewer(container, SWT.BORDER
 				| SWT.FULL_SELECTION);
 
-		
 		tableViewer.getTable().setLinesVisible(true);
 		tableViewer.getTable().setHeaderVisible(true);
 

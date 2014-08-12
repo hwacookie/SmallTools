@@ -79,6 +79,7 @@ public class PropertyFileConfigurator implements Configurator {
 		return false;
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 * 

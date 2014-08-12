@@ -12,18 +12,18 @@
 <executableName>PresenceWatcher.exe</executableName>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>PresenceWatcher.jar</jarLocation>
-<mainClassName>de.mbaaba.tool.HereIAmDisplay</mainClassName>
+<mainClassName>de.mbaaba.tool.PresenceWatcher</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
-<minimumVersion>1.5</minimumVersion>
-<skeletonName>Autodownload Wrapper</skeletonName>
+<minimumVersion></minimumVersion>
+<skeletonName>Windowed Wrapper</skeletonName>
 <skeletonProperties>
 <key>Message</key>
 <value>Java has not been found on your computer. Do you want to download it?</value>
 </skeletonProperties>
 <skeletonProperties>
-<key>DownloadURL</key>
-<value>http://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab</value>
+<key>URL</key>
+<value></value>
 </skeletonProperties>
 <skeletonProperties>
 <key>SingleProcess</key>
@@ -31,7 +31,7 @@
 </skeletonProperties>
 <skeletonProperties>
 <key>SingleInstance</key>
-<value>1</value>
+<value>0</value>
 </skeletonProperties>
 <skeletonProperties>
 <key>JniSmooth</key>
