@@ -13,6 +13,161 @@ import org.junit.Test;
 public class WorktimeEntryUtilsTest {
 
 	
+	@Test
+	public void testCalcPlannedBalance() {
+		String actual;
+		int planned;
+		Calendar cal = new GregorianCalendar();
+		// make sure we have a non-holiday.
+		cal.set(Calendar.DAY_OF_MONTH, 13);
+		cal.set(Calendar.MONTH, Calendar.AUGUST);
+		cal.set(Calendar.YEAR, 2014);
+		Date date = cal.getTime();
+
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		long startTime = cal.getTimeInMillis();
+	
+		
+		planned = 120;
+		
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-01:00", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 30);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-00:30", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 2);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:00", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 2);
+		cal.set(Calendar.MINUTE, 15);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:00", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 2);
+		cal.set(Calendar.MINUTE, 16);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:01", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 3);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:45", actual);
+		
+
+		cal.set(Calendar.HOUR_OF_DAY, 6);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+03:45", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 8);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+05:15", actual);
+		
+		
+		// now, some tests with a planned time of 5 hours
+		
+		planned = 5 * 60;
+		
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 30);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-03:45", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 5);
+		cal.set(Calendar.MINUTE, 00);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-00:15", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 5);
+		cal.set(Calendar.MINUTE, 15);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:00", actual);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 5);
+		cal.set(Calendar.MINUTE, 20);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:05", actual);
+
+		// now, test the long break!
+		cal.set(Calendar.HOUR_OF_DAY, 6);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:45", actual);
+
+		
+		cal.set(Calendar.HOUR_OF_DAY, 6);
+		cal.set(Calendar.MINUTE, 15);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+01:00", actual);			
+		
+		cal.set(Calendar.HOUR_OF_DAY, 6);
+		cal.set(Calendar.MINUTE, 20);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+01:00", actual);			
+		
+		
+		// now test a very long workday
+		planned = 9 * 60;
+		cal.set(Calendar.HOUR_OF_DAY, 2);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-07:45", actual);
+
+		// check if small break added
+		cal.set(Calendar.HOUR_OF_DAY, 3);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-06:45", actual);
+
+		// check if long break added
+		cal.set(Calendar.HOUR_OF_DAY, 9);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-00:45", actual);
+
+		cal.set(Calendar.HOUR_OF_DAY, 9);
+		cal.set(Calendar.MINUTE, 30);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("-00:15", actual);
+
+		cal.set(Calendar.HOUR_OF_DAY, 9);
+		cal.set(Calendar.MINUTE, 45);
+		cal.set(Calendar.SECOND, 0);
+		actual = WorktimeEntryUtils.calculatePlannedBalance(startTime,  date, planned, cal.getTimeInMillis());
+		Assert.assertEquals("+00:00", actual);
+
+		
+	}
+	
 	
 	@Test
 	public void testBreakCalcInMinutes() {
@@ -242,32 +397,40 @@ public class WorktimeEntryUtilsTest {
 	
 	@Test
 	public void testFormat() {
-		int time = 0;
+		int time = -10;
 		String formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("0:00", formatMinutes);
+		Assert.assertEquals("-00:10", formatMinutes);
+
+		time = -61;
+		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
+		Assert.assertEquals("-01:01", formatMinutes);
+
+		time = 0;
+		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
+		Assert.assertEquals("+00:00", formatMinutes);
 
 		time = 1;
 		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("0:01", formatMinutes);
+		Assert.assertEquals("+00:01", formatMinutes);
 
 		time = 9;
 		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("0:09", formatMinutes);
+		Assert.assertEquals("+00:09", formatMinutes);
 
 		time = 11;
 		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("0:11", formatMinutes);
+		Assert.assertEquals("+00:11", formatMinutes);
 
 		time = 59;
 		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("0:59", formatMinutes);
+		Assert.assertEquals("+00:59", formatMinutes);
 
 		time = 60;
 		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("1:00", formatMinutes);
+		Assert.assertEquals("+01:00", formatMinutes);
 
 		time = 61;
 		formatMinutes = WorktimeEntryUtils.formatMinutes(time);
-		Assert.assertEquals("1:01", formatMinutes);
+		Assert.assertEquals("+01:01", formatMinutes);
 	}
 }

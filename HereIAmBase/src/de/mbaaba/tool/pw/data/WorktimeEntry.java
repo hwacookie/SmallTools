@@ -60,5 +60,10 @@ public class WorktimeEntry {
 	public void setPlanned(int planned) {
 		this.planned = planned;
 	}
+	
+	
 
+	
+	
+	
 }

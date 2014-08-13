@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.Image;
 public class WorktimeLabelProvider extends CellLabelProvider implements
 		ITableLabelProvider {
 
-
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
@@ -52,15 +51,14 @@ public class WorktimeLabelProvider extends CellLabelProvider implements
 			break;
 
 		case 6:
-			time = WorktimeEntryUtils.getNetWorktimeInMinutes(we);
-			if (time > 0) {
-				return WorktimeEntryUtils.formatMinutes(time - we.getPlanned());
-			}
-			break;
+			String s = WorktimeEntryUtils.calculateBalanceString(we);
+			return s;
 
 		case 7:
 			if (we.getComment() != null) {
 				return we.getComment();
+			} else if (WorktimeEntryUtils.isHoliday(we.getDate())) {
+				return WorktimeEntryUtils.whatHoliday(we.getDate());
 			}
 			break;
 
@@ -69,6 +67,7 @@ public class WorktimeLabelProvider extends CellLabelProvider implements
 		}
 		return "";
 	}
+
 
 	@Override
 	public void update(ViewerCell cell) {

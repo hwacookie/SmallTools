@@ -119,4 +119,17 @@ public class PropertyFileConfigurator implements Configurator {
 		System.err.println(aString);
 	}
 
+
+	@Override
+	public boolean getProperty(String aPropertyName, boolean aDefaultValue) {
+		String s = getProperty(aPropertyName, String.valueOf(aDefaultValue));
+		return Boolean.valueOf(s);
+	}
+
+
+	@Override
+	public void setProperty(String aPropertyName, boolean aValue) {
+		setProperty(aPropertyName, Boolean.toString(aValue));
+	}
+
 }

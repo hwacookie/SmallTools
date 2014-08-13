@@ -43,6 +43,8 @@ import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
 import de.mbaaba.tool.HereIAm.Activity;
+import de.mbaaba.tool.pw.data.WorktimeEntry;
+import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.util.Configurator;
 import de.mbaaba.util.PropertyFileConfigurator;
 import de.mbaaba.util.Units;
@@ -65,8 +67,6 @@ public class PresenceWatcher implements PresenceListener {
 
 	private Label lbStatus;
 
-	protected de.mbaaba.tool.DisplayMode displayMode;
-
 	private HereIAm hereIAm;
 
 	protected Point movingOffset;
@@ -86,6 +86,18 @@ public class PresenceWatcher implements PresenceListener {
 
 	private MenuItem miShellVisible;
 
+	private DataStorageManager dataStorage = DataStorageManager.getInstance();
+
+	private boolean remindOnBreakes = true;
+
+	private boolean shortBreakDetected;
+
+	private boolean longBreakDetected;
+
+	private Integer lastDayForBreakDetection;
+
+	private MenuItem miRemindBreakes;
+
 	public PresenceWatcher() throws IOException, InterruptedException {
 		String home = System.getProperty("user.home");
 		File homeFile = new File(home + "/.presenceWatcher");
@@ -103,12 +115,11 @@ public class PresenceWatcher implements PresenceListener {
 		};
 		Runtime.getRuntime().addShutdownHook(hook);
 
-		displayMode = DisplayMode.TIME_LEFT;
 		createGui();
 		loadShellPos();
 		shell.pack();
 		loadImages();
-		hereIAm = new HereIAm(configurator, this);
+		hereIAm = new HereIAm(this);
 
 	}
 
@@ -253,24 +264,6 @@ public class PresenceWatcher implements PresenceListener {
 	private Menu createPopup() {
 		popupMenu = new Menu(shell, SWT.POP_UP);
 
-		createDisplayModeMenuItem(popupMenu, DisplayMode.TIME_PASSED);
-		createDisplayModeMenuItem(popupMenu, DisplayMode.IDLE_SINCE);
-		createDisplayModeMenuItem(popupMenu, DisplayMode.TIME_LEFT);
-		createDisplayModeMenuItem(popupMenu, DisplayMode.TIME_STARTED);
-		createDisplayModeMenuItem(popupMenu, DisplayMode.TIME_FINISHED);
-
-		new MenuItem(popupMenu, SWT.SEPARATOR);
-		MenuItem itemSetStart = new MenuItem(popupMenu, SWT.PUSH);
-		itemSetStart.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent aE) {
-				setStartTime();
-			}
-
-		});
-		itemSetStart.setText("Startzeit setzen");
-
 		miShellVisible = new MenuItem(popupMenu, SWT.CHECK);
 		miShellVisible.setText("Zeige Display");
 		miShellVisible.addListener(SWT.Selection, new Listener() {
@@ -285,17 +278,33 @@ public class PresenceWatcher implements PresenceListener {
 						Boolean.toString(shell.isVisible()));
 			}
 		});
+		{
+			MenuItem miShowHistory = new MenuItem(popupMenu, SWT.PUSH);
+			miShowHistory.addSelectionListener(new SelectionAdapter() {
 
-		MenuItem miShowHistory = new MenuItem(popupMenu, SWT.PUSH);
-		miShowHistory.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent aE) {
+					HistoryViewer.openViewer(shell);
+				}
 
-			@Override
-			public void widgetSelected(SelectionEvent aE) {
-				showHistory();
-			}
+			});
+			miShowHistory.setText("Zeige Historie");
+		}
+		new MenuItem(popupMenu, SWT.SEPARATOR);
+		{
+			miRemindBreakes = new MenuItem(popupMenu, SWT.CHECK);
+			miRemindBreakes.setSelection(true);
+			remindOnBreakes = true;
+			miRemindBreakes.addSelectionListener(new SelectionAdapter() {
 
-		});
-		miShowHistory.setText("Zeige Historie");
+				@Override
+				public void widgetSelected(SelectionEvent aE) {
+					setRemindOnBreakes(miRemindBreakes.getSelection());
+				}
+
+			});
+			miRemindBreakes.setText("Erinnere an Pausen");
+		}
 
 		new MenuItem(popupMenu, SWT.SEPARATOR);
 		MenuItem itemExit = new MenuItem(popupMenu, SWT.PUSH);
@@ -316,21 +325,16 @@ public class PresenceWatcher implements PresenceListener {
 		return popupMenu;
 	}
 
-	protected void showHistory() {
-		HistoryViewer.openViewer(shell);
-	}
-
-	private void createDisplayModeMenuItem(Menu menu, final DisplayMode dm) {
-		MenuItem item = new MenuItem(menu, SWT.RADIO);
-		item.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent aE) {
-				displayMode = dm;
-			}
-
-		});
-		item.setText(dm.getMsg() + " ...");
+	protected void setRemindOnBreakes(boolean selection) {
+		if (selection) {
+			lastDayForBreakDetection = null;
+			shortBreakDetected = false;
+			longBreakDetected = false;
+		}
+		if (selection != remindOnBreakes) {
+			remindOnBreakes = selection;
+			configurator.setProperty("remindOnBreakes", remindOnBreakes);
+		}
 	}
 
 	private void setColorScheme(final int aColor) {
@@ -342,6 +346,9 @@ public class PresenceWatcher implements PresenceListener {
 					if (aColor == SWT.COLOR_RED) {
 						setTrayImage(iconRed);
 						fg = SWT.COLOR_WHITE;
+					} else if (aColor == SWT.COLOR_YELLOW) {
+						setTrayImage(iconGreen);
+						fg = SWT.COLOR_BLACK;
 					} else {
 						setTrayImage(iconGreen);
 						fg = SWT.COLOR_BLACK;
@@ -375,106 +382,79 @@ public class PresenceWatcher implements PresenceListener {
 		return display;
 	}
 
-	protected void setStartTime() {
-		final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-		IInputValidator validator = new IInputValidator() {
+	public void timeChange() {
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(new Date());
 
-			public String isValid(String aArg0) {
-				try {
-					sdf.parse(aArg0);
-					return null;
-				} catch (ParseException e) {
-					return "Ungültiges Datumsformat";
+		if (lastDayForBreakDetection == null) {
+			Calendar cal2 = new GregorianCalendar();
+			cal2.setTime(new Date());
+			lastDayForBreakDetection = cal2.get(Calendar.DAY_OF_MONTH);
+		}
+
+		// if a new day has started ...
+		if (cal.get(Calendar.DAY_OF_MONTH) != lastDayForBreakDetection) {
+			shortBreakDetected = false;
+			longBreakDetected = false;
+			lastDayForBreakDetection = null;
+		}
+
+		boolean temp = false;
+		if (remindOnBreakes) {
+			if (WorktimeEntryUtils.isInShortBreak(
+					dataStorage.getTodaysWorktimeEntry(),
+					System.currentTimeMillis() - (Units.MINUTE * 3))) {
+				temp = true;
+				if (!shortBreakDetected) {
+					shortBreakDetected = true;
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							MessageDialog
+									.openInformation(shell, "Pause!",
+											"Na, wie wär's denn mal mit einer kleinen Pause?");
+						}
+					});
 				}
 			}
-		};
-		InputDialog inputDialog = new InputDialog(shell, "Setze Startzeit",
-				"Startzeit manuell setzen",
-				sdf.format(hereIAm.getStartToday()), validator);
-		int ret = inputDialog.open();
-		if (ret == InputDialog.OK) {
-			String h = inputDialog.getValue()
-					.substring(0, inputDialog.getValue().indexOf(":")).trim();
-			String m = inputDialog.getValue()
-					.substring(inputDialog.getValue().indexOf(":") + 1).trim();
-			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(h));
-			calendar.set(Calendar.MINUTE, Integer.parseInt(m));
-			calendar.set(Calendar.SECOND, 0);
-			long newTime = calendar.getTimeInMillis();
-			hereIAm.setStartTime(newTime);
+			if (WorktimeEntryUtils.isInLongBreak(
+					dataStorage.getTodaysWorktimeEntry(),
+					System.currentTimeMillis() - (Units.MINUTE * 3))) {
+				temp = true;
+				if (!longBreakDetected) {
+					longBreakDetected = true;
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							MessageDialog
+									.openInformation(shell, "Pause!",
+											"Na, wie wär's denn mal mit einer schönen, langen Pause?");
+						}
+					});
+				}
+			}
 		}
 
-	}
+		final boolean inABreak = temp;
 
-	public void statusChange(final Activity aActivity) {
-		// shell.getDisplay().asyncExec(new Runnable() {
-		// public void run() {
-		// trayItem.setToolTipText("Presence Watcher - " + aActivity);
-		// }
-		// });
-	}
-
-	public void timeChange() {
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-		String temp = "";
-		long val;
-		switch (displayMode) {
-		case TIME_LEFT:
-
-			if (hereIAm.getActivity() == Activity.IDLE) {
-				val = hereIAm.getEndToday() - hereIAm.getLastActivity();
-			} else {
-				val = hereIAm.getEndToday() - System.currentTimeMillis();
-			}
-			if (val < 0) {
-				temp = "+"
-						+ DurationFormatUtils.formatDuration(-val, TIME_FORMAT);
-			} else {
-				temp = "-"
-						+ DurationFormatUtils.formatDuration(val, TIME_FORMAT);
-			}
-			break;
-		case IDLE_SINCE:
-			temp = sdf.format(hereIAm.getLastActivity());
-			break;
-
-		case TIME_PASSED:
-			if (hereIAm.getActivity() == Activity.IDLE) {
-				val = (hereIAm.getLastActivity() - hereIAm.getStartToday());
-			} else {
-				val = (System.currentTimeMillis() - hereIAm.getStartToday());
-			}
-			temp = DurationFormatUtils.formatDuration(val, TIME_FORMAT);
-			break;
-
-		case TIME_STARTED:
-			temp = sdf.format(new Date(hereIAm.getStartToday()));
-			break;
-
-		case TIME_FINISHED:
-			temp = sdf.format(hereIAm.getEndToday());
-			break;
-
-		default:
-			break;
-		}
-
+		final String s = WorktimeEntryUtils.calculatePlannedBalance(
+				dataStorage.getTodaysWorktimeEntry(),
+				System.currentTimeMillis());
 		display = getDisplay();
 		if (display != null) {
-			final String newStatusString = temp;
 			getDisplay().asyncExec(new Runnable() {
 
 				public void run() {
-					trayItem.setToolTipText(displayMode.getMsg() + ": "
-							+ newStatusString);
-					lbStatus.setText(newStatusString);
-					if (hereIAm.getEndToday() - System.currentTimeMillis() < 0) {
-						// did my work today
-						setColorScheme(SWT.COLOR_GREEN);
-					} else {
+					trayItem.setToolTipText(s);
+					lbStatus.setText(s);
+					if (inABreak) {
+						setColorScheme(SWT.COLOR_YELLOW);
+					} else if (s.startsWith("-")) {
 						// not yet done
 						setColorScheme(SWT.COLOR_RED);
+					} else {
+						// did my work today
+						setColorScheme(SWT.COLOR_GREEN);
 					}
 				}
 			});

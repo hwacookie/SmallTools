@@ -13,10 +13,15 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar" sourcepath="lib/org.eclipse.equinox.common.source_3.6.200.v20130402-1505.jar"/>
 	<classpathentry kind="lib" path="lib/jollyday-0.4.7.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.4.jar" sourcepath="lib/joda-time-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/cloning-1.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/objenesis-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.5.0-20131127.212802-1.jar"/>
+	<classpathentry kind="lib" path="lib/xmlpull-1.1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding_1.4.1.v20140214-0004.jar" sourcepath="lib/org.eclipse.core.databinding_1.4.1.v20140214-0004.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding.beans_1.2.200.v20140214-0004.jar" sourcepath="lib/org.eclipse.core.databinding.beans_1.2.200.v20140214-0004.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding.observable_1.4.1.v20140210-1835.jar" sourcepath="lib/org.eclipse.core.databinding.observable_1.4.1.v20140210-1835.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding.observable_1.4.1.v20140210-1835.jar" sourcepath="lib/org.eclipse.core.databinding.observable.source_1.4.1.v20140210-1835.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding.property_1.4.200.v20140214-0004.jar" sourcepath="lib/org.eclipse.core.databinding.property_1.4.200.v20140214-0004.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jface.databinding_1.6.200.v20140528-1422.jar" sourcepath="lib/org.eclipse.jface.databinding_1.6.200.v20140528-1422.jar"/>
 	<classpathentry kind="lib" path="lib/com.ibm.icu_52.1.0.v201404241930.jar" sourcepath="lib/com.ibm.icu_52.1.0.v201404241930.jar"/>
