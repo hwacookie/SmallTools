@@ -25,10 +25,10 @@ public class WorktimeEntryUtils {
 			"dd.MM.yyyy (E)");
 	public static final DateFormat TIME_ONLY = new SimpleDateFormat("HH:mm");
 
-	private static final int SHORT_BREAK_LENGTH = 15;
-	private static final int SHORT_BRAKE_START = 60 * 4;
-	private static final int LONG_BREAK_START = 60 * 6 + SHORT_BREAK_LENGTH;
-	private static final int LONG_BREAK_LENGTH = 30;
+	public static final int SHORT_BREAK_LENGTH = 15;
+	public static final int SHORT_BRAKE_START = 60 * 4;
+	public static final int LONG_BREAK_START = 60 * 6 + SHORT_BREAK_LENGTH;
+	public static final int LONG_BREAK_LENGTH = 30;
 
 	public static int getNetWorktimeInMinutes(WorktimeEntry we) {
 		if ((((we.getStartTime() == null) || we.getEndTime() == null))
@@ -128,8 +128,6 @@ public class WorktimeEntryUtils {
 		if (aMinutes < 0) {
 			res.append("-");
 			aMinutes = -aMinutes;
-		} else {
-			res.append("+");
 		}
 		int hours = aMinutes / 60;
 		int minutes = aMinutes % 60;
@@ -144,6 +142,7 @@ public class WorktimeEntryUtils {
 		res.append(minutes);
 		return res.toString();
 	}
+	
 
 	public static boolean isHoliday(Date date) {
 		Calendar cal = new GregorianCalendar();

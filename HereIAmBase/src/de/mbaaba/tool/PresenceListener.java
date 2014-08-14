@@ -7,6 +7,9 @@
  */
 package de.mbaaba.tool;
 
+import de.mbaaba.tool.HereIAm.Activity;
+
 public interface PresenceListener {
 	void timeChange();
+	void activityChange(Activity aActivity);
 }

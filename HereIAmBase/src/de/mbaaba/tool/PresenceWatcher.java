@@ -10,17 +10,14 @@ package de.mbaaba.tool;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -29,9 +26,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -39,6 +38,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolTip;
 import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
@@ -57,22 +57,17 @@ public class PresenceWatcher implements PresenceListener {
 
 	private static final String SHELL_X_POS = "shell.x";
 
-	private static final String TIME_FORMAT = "HH':'mm':'ss";
-
 	private Display display;
 
 	private Shell shell;
 
 	private Composite composite;
 
-	private Label lbStatus;
-
-	private HereIAm hereIAm;
+	private Label lbTimeDisplay;
 
 	protected Point movingOffset;
 
-	protected static final long WORK_TIME_PER_DAY = 8 * Units.HOUR + 45
-			* Units.MINUTE;
+	protected static final long WORK_TIME_PER_DAY = 8 * Units.HOUR + 45 * Units.MINUTE;
 
 	private final Configurator configurator;
 
@@ -96,7 +91,13 @@ public class PresenceWatcher implements PresenceListener {
 
 	private Integer lastDayForBreakDetection;
 
-	private MenuItem miRemindBreakes;
+	private MenuItem miCreateReminder;
+
+	private Point dpi;
+
+	private Image iconYellow;
+
+	private boolean endOfPlanDetected;
 
 	public PresenceWatcher() throws IOException, InterruptedException {
 		String home = System.getProperty("user.home");
@@ -119,8 +120,7 @@ public class PresenceWatcher implements PresenceListener {
 		loadShellPos();
 		shell.pack();
 		loadImages();
-		hereIAm = new HereIAm(this);
-
+		new HereIAm(this);
 	}
 
 	private void createTrayItem() {
@@ -130,7 +130,6 @@ public class PresenceWatcher implements PresenceListener {
 			System.out.println("The system tray is not available");
 		} else {
 			trayItem = new TrayItem(tray, SWT.NONE);
-			// trayItem.setToolTipText("Presence Watcher - IDLE");
 			trayItem.addListener(SWT.Show, new Listener() {
 				public void handleEvent(Event event) {
 				}
@@ -160,11 +159,12 @@ public class PresenceWatcher implements PresenceListener {
 	}
 
 	private void loadImages() {
-		InputStream is = getClass().getClassLoader().getResourceAsStream(
-				"images/green.ico");
+		InputStream is = getClass().getClassLoader().getResourceAsStream("images/green.ico");
 		iconGreen = new Image(display, is);
 		is = getClass().getClassLoader().getResourceAsStream("images/red.ico");
 		iconRed = new Image(display, is);
+		is = getClass().getClassLoader().getResourceAsStream("images/yellow.ico");
+		iconYellow = new Image(display, is);
 	}
 
 	private void saveShellPos() {
@@ -195,40 +195,41 @@ public class PresenceWatcher implements PresenceListener {
 
 	private void createGui() {
 		display = new Display();
+
+		dpi = display.getDPI();
+
 		shell = new Shell(display, SWT.ON_TOP);
 		shell.setText("Shell");
-		shell.setSize(130, 16);
-		shell.setLocation(70, 3);
+		shell.setSize(146, 16);
+		shell.setLocation(70, 2);
 
 		createTrayItem();
 
 		composite = new Composite(shell, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
+		GridLayout gridLayout = new GridLayout(2, false);
 		composite.setLayout(gridLayout);
 
-		lbStatus = new Label(composite, SWT.NONE);
-		lbStatus.setText("+00:00:00");
+		lbTimeDisplay = new Label(composite, SWT.NONE);
+		lbTimeDisplay.setText("-00:00 / 000000");
 
 		GridData gridData = new GridData(SWT.FILL);
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.grabExcessVerticalSpace = true;
-		lbStatus.setLayoutData(gridData);
+		lbTimeDisplay.setLayoutData(gridData);
 
-		lbStatus.setMenu(popupMenu);
+		lbTimeDisplay.setMenu(popupMenu);
 		composite.setMenu(popupMenu);
 		shell.setMenu(popupMenu);
 
 		composite.pack();
-		shell.pack();
 		shell.open();
 
 		setColorScheme(SWT.COLOR_RED);
 
-		lbStatus.addMouseMoveListener(new MouseMoveListener() {
+		lbTimeDisplay.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				if (movingOffset != null) {
-					Point newShellPos = lbStatus.toDisplay(
-							e.x - movingOffset.x, e.y - movingOffset.y);
+					Point newShellPos = lbTimeDisplay.toDisplay(e.x - movingOffset.x, e.y - movingOffset.y);
 					shell.setLocation(newShellPos);
 					saveShellPos();
 
@@ -253,12 +254,41 @@ public class PresenceWatcher implements PresenceListener {
 
 		};
 
-		lbStatus.addMouseListener(mouseAdapter);
-		String shellVisible = configurator.getProperty(SHELL_VISIBLE,
-				Boolean.TRUE.toString());
+		lbTimeDisplay.addMouseListener(mouseAdapter);
+		String shellVisible = configurator.getProperty(SHELL_VISIBLE, Boolean.TRUE.toString());
 		shell.setVisible(Boolean.valueOf(shellVisible));
 		miShellVisible.setSelection(shell.isVisible());
 
+		createTooltip(lbTimeDisplay);
+
+	}
+
+	private void createTooltip(Control aControl) {
+
+		FancyJFaceTooltip myTooltipLabel = new FancyJFaceTooltip(aControl) {
+
+			protected Composite createContentArea(Composite parent) {
+				Composite comp = super.createContentArea(parent);
+				comp.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+				FillLayout layout = new FillLayout();
+				layout.marginWidth = 5;
+				comp.setLayout(layout);
+
+				CLabel label = new CLabel(comp, SWT.NONE);
+				String longStatusMessage = calculateStatusMessage(true);
+				label.setText(longStatusMessage);
+				label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+				return comp;
+			}
+
+			@Override
+			protected String getHeaderText() {
+				return "Anwesenheits-Info";
+			}
+		};
+		myTooltipLabel.setShift(new Point(-5, -5));
+		myTooltipLabel.setHideOnMouseDown(false);
+		myTooltipLabel.activate();
 	}
 
 	private Menu createPopup() {
@@ -274,8 +304,7 @@ public class PresenceWatcher implements PresenceListener {
 				} else {
 					shell.setVisible(false);
 				}
-				configurator.setProperty(SHELL_VISIBLE,
-						Boolean.toString(shell.isVisible()));
+				configurator.setProperty(SHELL_VISIBLE, Boolean.toString(shell.isVisible()));
 			}
 		});
 		{
@@ -284,7 +313,7 @@ public class PresenceWatcher implements PresenceListener {
 
 				@Override
 				public void widgetSelected(SelectionEvent aE) {
-					HistoryViewer.openViewer(shell);
+					HistoryViewer.openViewer();
 				}
 
 			});
@@ -292,18 +321,31 @@ public class PresenceWatcher implements PresenceListener {
 		}
 		new MenuItem(popupMenu, SWT.SEPARATOR);
 		{
-			miRemindBreakes = new MenuItem(popupMenu, SWT.CHECK);
-			miRemindBreakes.setSelection(true);
+			miCreateReminder = new MenuItem(popupMenu, SWT.CHECK);
+			miCreateReminder.setSelection(true);
 			remindOnBreakes = true;
-			miRemindBreakes.addSelectionListener(new SelectionAdapter() {
+			miCreateReminder.addSelectionListener(new SelectionAdapter() {
 
 				@Override
 				public void widgetSelected(SelectionEvent aE) {
-					setRemindOnBreakes(miRemindBreakes.getSelection());
+					setRemindOnBreakes(miCreateReminder.getSelection());
 				}
 
 			});
-			miRemindBreakes.setText("Erinnere an Pausen");
+			miCreateReminder.setText("Erinnere an Pausen");
+		}
+
+		{
+			miCreateReminder = new MenuItem(popupMenu, SWT.PUSH);
+			miCreateReminder.addSelectionListener(new SelectionAdapter() {
+
+				@Override
+				public void widgetSelected(SelectionEvent aE) {
+					createReminder();
+				}
+
+			});
+			miCreateReminder.setText("Erinnerung anlegen");
 		}
 
 		new MenuItem(popupMenu, SWT.SEPARATOR);
@@ -312,8 +354,7 @@ public class PresenceWatcher implements PresenceListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent aE) {
-				boolean reallyQuit = MessageDialog.openQuestion(shell,
-						"Sicher?", "Wollen Sie wirklich beenden?");
+				boolean reallyQuit = MessageDialog.openQuestion(null, "Sicher?", "Wollen Sie wirklich beenden?");
 				if (reallyQuit) {
 					System.exit(1);
 				}
@@ -325,11 +366,20 @@ public class PresenceWatcher implements PresenceListener {
 		return popupMenu;
 	}
 
+	protected void createReminder() {
+		CreateAlarmDialog createAlarmDialog = new CreateAlarmDialog(null);
+		int open = createAlarmDialog.open();
+		if (open == Window.OK) {
+
+		}
+	}
+
 	protected void setRemindOnBreakes(boolean selection) {
 		if (selection) {
 			lastDayForBreakDetection = null;
 			shortBreakDetected = false;
 			longBreakDetected = false;
+			endOfPlanDetected = false;
 		}
 		if (selection != remindOnBreakes) {
 			remindOnBreakes = selection;
@@ -347,16 +397,15 @@ public class PresenceWatcher implements PresenceListener {
 						setTrayImage(iconRed);
 						fg = SWT.COLOR_WHITE;
 					} else if (aColor == SWT.COLOR_YELLOW) {
-						setTrayImage(iconGreen);
+						setTrayImage(iconYellow);
 						fg = SWT.COLOR_BLACK;
 					} else {
 						setTrayImage(iconGreen);
 						fg = SWT.COLOR_BLACK;
 					}
-					composite
-							.setBackground(getDisplay().getSystemColor(aColor));
-					lbStatus.setBackground(getDisplay().getSystemColor(aColor));
-					lbStatus.setForeground(getDisplay().getSystemColor(fg));
+					composite.setBackground(getDisplay().getSystemColor(aColor));
+					lbTimeDisplay.setBackground(getDisplay().getSystemColor(aColor));
+					lbTimeDisplay.setForeground(getDisplay().getSystemColor(fg));
 
 				}
 			});
@@ -396,39 +445,47 @@ public class PresenceWatcher implements PresenceListener {
 		if (cal.get(Calendar.DAY_OF_MONTH) != lastDayForBreakDetection) {
 			shortBreakDetected = false;
 			longBreakDetected = false;
+			endOfPlanDetected = false;
 			lastDayForBreakDetection = null;
 		}
 
 		boolean temp = false;
+		WorktimeEntry todaysWorktimeEntry = dataStorage.getTodaysWorktimeEntry();
 		if (remindOnBreakes) {
-			if (WorktimeEntryUtils.isInShortBreak(
-					dataStorage.getTodaysWorktimeEntry(),
-					System.currentTimeMillis() - (Units.MINUTE * 3))) {
+			if (WorktimeEntryUtils.isInShortBreak(todaysWorktimeEntry, System.currentTimeMillis() - (Units.MINUTE * 3))) {
 				temp = true;
 				if (!shortBreakDetected) {
 					shortBreakDetected = true;
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							MessageDialog
-									.openInformation(shell, "Pause!",
-											"Na, wie wär's denn mal mit einer kleinen Pause?");
+							openBreakInfo("Päuschen", "Hachja, *jetzt* ne schöne Tasse Kaffee ... das wär's, oder?",
+									WorktimeEntryUtils.SHORT_BREAK_LENGTH * 60);
 						}
 					});
 				}
 			}
-			if (WorktimeEntryUtils.isInLongBreak(
-					dataStorage.getTodaysWorktimeEntry(),
-					System.currentTimeMillis() - (Units.MINUTE * 3))) {
+			if (WorktimeEntryUtils.isInLongBreak(todaysWorktimeEntry, System.currentTimeMillis() - (Units.MINUTE * 3))) {
 				temp = true;
 				if (!longBreakDetected) {
 					longBreakDetected = true;
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							MessageDialog
-									.openInformation(shell, "Pause!",
-											"Na, wie wär's denn mal mit einer schönen, langen Pause?");
+							openBreakInfo("Pause", "Und jetzt: Wie wär's denn mit einem kleinen Spaziergang?",
+									WorktimeEntryUtils.LONG_BREAK_LENGTH * 60);
+						}
+					});
+				}
+			}
+			if (WorktimeEntryUtils.getNetWorktimeInMinutes(todaysWorktimeEntry) > todaysWorktimeEntry.getPlanned()) {
+				if (!endOfPlanDetected) {
+					endOfPlanDetected = true;
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							openBreakInfo("Feierabend!",
+									"Also, so an und für sich *könnte* man jetzt ja auch mal nach Hause gehen ...", 60 * 60 * 3);
 						}
 					});
 				}
@@ -437,16 +494,21 @@ public class PresenceWatcher implements PresenceListener {
 
 		final boolean inABreak = temp;
 
-		final String s = WorktimeEntryUtils.calculatePlannedBalance(
-				dataStorage.getTodaysWorktimeEntry(),
-				System.currentTimeMillis());
 		display = getDisplay();
 		if (display != null) {
 			getDisplay().asyncExec(new Runnable() {
 
 				public void run() {
-					trayItem.setToolTipText(s);
-					lbStatus.setText(s);
+					WorktimeEntry todaysWorktimeEntry = dataStorage.getTodaysWorktimeEntry();
+					double meters = ((todaysWorktimeEntry.getActivityIndicator() * 2.54 / dpi.x));
+					String meterString = String.valueOf((int) meters);
+					while (meterString.length() < 6) {
+						meterString = "0" + meterString;
+					}
+					final String s = WorktimeEntryUtils.calculatePlannedBalance(todaysWorktimeEntry, System.currentTimeMillis())
+							+ " / " + meterString;
+
+					lbTimeDisplay.setText(s);
 					if (inABreak) {
 						setColorScheme(SWT.COLOR_YELLOW);
 					} else if (s.startsWith("-")) {
@@ -456,14 +518,19 @@ public class PresenceWatcher implements PresenceListener {
 						// did my work today
 						setColorScheme(SWT.COLOR_GREEN);
 					}
+					trayItem.setToolTipText(calculateStatusMessage(false));
 				}
 			});
 		}
 
 	}
 
-	public static void main(String[] args) throws InterruptedException,
-			IOException {
+	protected void openBreakInfo(String aTitle, String aMessage, int aNumSeconds) {
+		BreakInfoDialog breakInfoDialog = new BreakInfoDialog(null);
+		breakInfoDialog.openWithData(aTitle, aMessage, aNumSeconds);
+	}
+
+	public static void main(String[] args) throws InterruptedException, IOException {
 		PresenceWatcher presenceWatcher = new PresenceWatcher();
 		presenceWatcher.run();
 
@@ -476,6 +543,58 @@ public class PresenceWatcher implements PresenceListener {
 				getDisplay().sleep();
 			}
 		}
+	}
+
+	private String calculateStatusMessage(boolean aLongVersion) {
+		WorktimeEntry todaysWorktimeEntry = dataStorage.getTodaysWorktimeEntry();
+
+		int breakMinutes = WorktimeEntryUtils
+				.getBreaktimeMinutes(todaysWorktimeEntry.getDate(), todaysWorktimeEntry.getPlanned());
+		Date possibleEndDate = new Date(todaysWorktimeEntry.getStartTime().getTime()
+				+ (todaysWorktimeEntry.getPlanned() + breakMinutes) * Units.MINUTE);
+
+		String timeToStayString = WorktimeEntryUtils.calculatePlannedBalance(todaysWorktimeEntry, System.currentTimeMillis());
+		String statusMessage;
+
+		if (aLongVersion) {
+			if (timeToStayString.startsWith("-")) {
+				statusMessage = "Du bist um " + WorktimeEntryUtils.TIME_ONLY.format(todaysWorktimeEntry.getStartTime())
+						+ " gekommen,\n" + "müsstest heute eigentlich "
+						+ WorktimeEntryUtils.formatMinutes(todaysWorktimeEntry.getPlanned()) + " arbeiten,\n"
+						+ "und kannst demnach inklusive einer Pause von\n" + WorktimeEntryUtils.formatMinutes(breakMinutes)
+						+ " um " + WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + " gehen, " + "also in "
+						+ timeToStayString.substring(1) + " Std/Minuten.";
+			} else {
+				statusMessage = "Du bist um " + WorktimeEntryUtils.TIME_ONLY.format(todaysWorktimeEntry.getStartTime())
+						+ " gekommen,\nmusstest heute " + WorktimeEntryUtils.formatMinutes(todaysWorktimeEntry.getPlanned())
+						+ " arbeiten,\nund konntest demnach inklusive\neiner Pause von "
+						+ WorktimeEntryUtils.formatMinutes(breakMinutes) + " um "
+						+ WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + " gehen,\n" + "also schon vor "
+						+ timeToStayString + " Std/Minuten";
+			}
+		} else {
+			if (timeToStayString.startsWith("-")) {
+				statusMessage = "Kommen um " + WorktimeEntryUtils.TIME_ONLY.format(todaysWorktimeEntry.getStartTime()) + "\n"
+						+ "Geplant " + WorktimeEntryUtils.formatMinutes(todaysWorktimeEntry.getPlanned()) + "\n" + "Pause "
+						+ WorktimeEntryUtils.formatMinutes(breakMinutes) + "\n" + "Gehen um "
+						+ WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + "\n" + "in " + timeToStayString.substring(1)
+						+ " Std/Minuten.";
+			} else {
+				statusMessage = "Kommen um " + WorktimeEntryUtils.TIME_ONLY.format(todaysWorktimeEntry.getStartTime()) + "\n"
+						+ "Geplant " + WorktimeEntryUtils.formatMinutes(todaysWorktimeEntry.getPlanned()) + "\n" + "Pause "
+						+ WorktimeEntryUtils.formatMinutes(breakMinutes) + "\n" + "Gehen um "
+						+ WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + "\n" + "vor " + timeToStayString
+						+ " Std/Minuten.";
+			}
+
+		}
+		return statusMessage;
+	}
+
+	@Override
+	public void activityChange(Activity aActivity) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

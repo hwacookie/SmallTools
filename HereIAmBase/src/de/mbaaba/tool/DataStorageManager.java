@@ -42,8 +42,7 @@ public class DataStorageManager implements DataStorage {
 	public WorktimeEntry getTodaysWorktimeEntry() {
 		return getWorktimeEntry(new Date());
 	}
-	
-	
+
 	@Override
 	public WorktimeEntry getWorktimeEntry(Date aDate) {
 		// try map ...
@@ -52,8 +51,15 @@ public class DataStorageManager implements DataStorage {
 			return res;
 		}
 
+		// try the old rolling fileAppender data
 		WorktimeEntry worktimeEntry = logfileDataStorage
 				.getWorktimeEntry(aDate);
+
+		// and if it cant be found there, create a new one.
+		if (worktimeEntry == null) {
+			worktimeEntry = new WorktimeEntry();
+			worktimeEntry.setDate(aDate);
+		}
 
 		data.put(aDate.getTime() / Units.DAY, worktimeEntry);
 

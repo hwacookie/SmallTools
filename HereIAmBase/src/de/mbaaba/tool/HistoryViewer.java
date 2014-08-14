@@ -1,15 +1,11 @@
 package de.mbaaba.tool;
 
-import java.awt.MouseInfo;
-import java.awt.PointerInfo;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -23,25 +19,29 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.wb.swt.SWTResourceManager;
 
-import de.mbaaba.tool.HereIAm.Activity;
 import de.mbaaba.tool.pw.data.WorktimeContentProvider;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.tool.pw.data.WorktimeLabelProvider;
-import de.mbaaba.util.Units;
 
 public class HistoryViewer extends Dialog {
 
@@ -54,8 +54,9 @@ public class HistoryViewer extends Dialog {
 
 	private WorktimeContentProvider worktimeContentProvider;
 	private WorktimeLabelProvider labelProvider;
-	private Label lblWeekBalanceOut;
+	private Label lblBalanceOut;
 	private Date curStartDate;
+	private Label lblWeekBalance;
 
 	/**
 	 * Create the dialog.
@@ -70,6 +71,18 @@ public class HistoryViewer extends Dialog {
 		dataStorage = DataStorageManager.getInstance();
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 
+	}
+
+	@Override
+	protected Point getInitialLocation(Point initialSize) {
+		Shell shell = this.getShell();
+		Monitor primary = shell.getMonitor();
+		Rectangle bounds = primary.getBounds();
+		Rectangle rect = shell.getBounds();
+
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		return new Point(x, y);
 	}
 
 	@Override
@@ -95,8 +108,7 @@ public class HistoryViewer extends Dialog {
 		gridLayout.numColumns = 2;
 
 		startDate = new DateTime(container, SWT.CALENDAR);
-		GridData gd_startDate = new GridData(SWT.LEFT, SWT.TOP, false, false,
-				1, 1);
+		GridData gd_startDate = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
 		gd_startDate.heightHint = 145;
 		startDate.setLayoutData(gd_startDate);
 
@@ -113,8 +125,7 @@ public class HistoryViewer extends Dialog {
 
 		});
 
-		tableViewer = new TableViewer(container, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.MULTI);
+		tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 
 		tableViewer.getTable().setLinesVisible(true);
 		tableViewer.getTable().setHeaderVisible(true);
@@ -129,8 +140,7 @@ public class HistoryViewer extends Dialog {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				WorktimeEntry weCopy = getSelectedWorkEntry();
 
-				WorktimeEntryEditor editor = new WorktimeEntryEditor(
-						HistoryViewer.this.getShell());
+				WorktimeEntryEditor editor = new WorktimeEntryEditor(HistoryViewer.this.getShell());
 
 				editor.setWorktimeEntry(weCopy);
 				int open = editor.open();
@@ -165,8 +175,7 @@ public class HistoryViewer extends Dialog {
 		colDate.setWidth(98);
 		colDate.setText("Datum");
 
-		TableViewerColumn tvcStart = new TableViewerColumn(tableViewer,
-				SWT.NONE);
+		TableViewerColumn tvcStart = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn colStart = tvcStart.getColumn();
 		colStart.setWidth(65);
 		colStart.setText("Startzeit");
@@ -176,8 +185,7 @@ public class HistoryViewer extends Dialog {
 		colEnd.setWidth(56);
 		colEnd.setText("Ende");
 
-		TableViewerColumn tvcBrake = new TableViewerColumn(tableViewer,
-				SWT.NONE);
+		TableViewerColumn tvcBrake = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn colBrake = tvcBrake.getColumn();
 		colBrake.setWidth(59);
 		colBrake.setText("Pause");
@@ -192,14 +200,12 @@ public class HistoryViewer extends Dialog {
 		colPlan.setWidth(53);
 		colPlan.setText("Plan");
 
-		TableViewerColumn tvcBalance = new TableViewerColumn(tableViewer,
-				SWT.NONE);
+		TableViewerColumn tvcBalance = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn colBalance = tvcBalance.getColumn();
 		colBalance.setWidth(54);
 		colBalance.setText("Saldo");
 
-		TableViewerColumn tvcComment = new TableViewerColumn(tableViewer,
-				SWT.NONE);
+		TableViewerColumn tvcComment = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn colComment = tvcComment.getColumn();
 		colComment.setWidth(226);
 		colComment.setText("Kommentar");
@@ -207,15 +213,19 @@ public class HistoryViewer extends Dialog {
 		new Label(container, SWT.NONE);
 
 		Composite composite = new Composite(container, SWT.NONE);
-		FillLayout fl_composite = new FillLayout(SWT.HORIZONTAL);
-		fl_composite.spacing = 5;
-		composite.setLayout(fl_composite);
+		composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		composite.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-		Label lblWeekBalance = new Label(composite, SWT.NONE);
+		lblWeekBalance = new Label(composite, SWT.NONE);
+		lblWeekBalance.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+		lblWeekBalance.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		lblWeekBalance.setText("Saldo:");
 
-		lblWeekBalanceOut = new Label(composite, SWT.NONE);
-		lblWeekBalanceOut.setText("0");
+		lblBalanceOut = new Label(composite, SWT.NONE);
+		lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+		lblBalanceOut.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
+		lblBalanceOut.setLayoutData(new RowData(77, SWT.DEFAULT));
+		lblBalanceOut.setText("0");
 		new Label(container, SWT.NONE);
 
 		Composite composite_1 = new Composite(container, SWT.NONE);
@@ -234,8 +244,7 @@ public class HistoryViewer extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
-				IStructuredSelection selection = (IStructuredSelection) tableViewer
-						.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 
 				Iterator<WorktimeEntry> iterator = selection.iterator();
 
@@ -258,8 +267,7 @@ public class HistoryViewer extends Dialog {
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 	}
 
 	/**
@@ -298,33 +306,37 @@ public class HistoryViewer extends Dialog {
 		int balance = 0;
 		Date today = new Date();
 		for (WorktimeEntry worktimeEntry : list) {
-			int time = WorktimeEntryUtils
-					.getNetWorktimeInMinutes(worktimeEntry);
-			if ((worktimeEntry.getDate().before(today))
-					&& (worktimeEntry.getPlanned() > 0)) {
+			int time = WorktimeEntryUtils.getNetWorktimeInMinutes(worktimeEntry);
+			if ((worktimeEntry.getDate().before(today))) {
 				balance += (time - worktimeEntry.getPlanned());
 			}
 		}
 
-		lblWeekBalanceOut.setText(WorktimeEntryUtils.formatMinutes(balance));
+		lblBalanceOut.setText(WorktimeEntryUtils.formatMinutes(balance));
+
+		if (balance > 0) {
+			lblWeekBalance.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+			lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+		} else {
+			lblWeekBalance.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		}
 	}
 
 	private WorktimeEntry getSelectedWorkEntry() {
 		int selectionIndex = table.getSelectionIndex();
 		Object[] elements = worktimeContentProvider.getElements(null);
-		WorktimeEntry weCopy = WorktimeEntryUtils
-				.clone((WorktimeEntry) elements[selectionIndex]);
+		WorktimeEntry weCopy = WorktimeEntryUtils.clone((WorktimeEntry) elements[selectionIndex]);
 		return weCopy;
 	}
 
-	public static void openViewer(final Shell s) {
-		Realm.runWithDefault(SWTObservables.getRealm(s.getDisplay()),
-				new Runnable() {
-					public void run() {
-						HistoryViewer historyViewer = new HistoryViewer(s);
-						historyViewer.open();
-					}
-				});
+	public static void openViewer() {
+		Realm.runWithDefault(SWTObservables.getRealm(Display.getDefault()), new Runnable() {
+			public void run() {
+				HistoryViewer historyViewer = new HistoryViewer(null);
+				historyViewer.open();
+			}
+		});
 	}
 
 }
