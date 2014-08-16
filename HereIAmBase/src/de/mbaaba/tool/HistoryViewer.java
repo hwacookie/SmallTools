@@ -11,11 +11,14 @@ import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -42,6 +45,7 @@ import de.mbaaba.tool.pw.data.WorktimeContentProvider;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.tool.pw.data.WorktimeLabelProvider;
+import de.mbaaba.util.ConfigManager;
 
 public class HistoryViewer extends Dialog {
 
@@ -57,6 +61,7 @@ public class HistoryViewer extends Dialog {
 	private Label lblBalanceOut;
 	private Date curStartDate;
 	private Label lblWeekBalance;
+	private Label lbWarning;
 
 	/**
 	 * Create the dialog.
@@ -137,19 +142,8 @@ public class HistoryViewer extends Dialog {
 		miOpenEditor.setText("Werte ändern");
 		SelectionAdapter selectionAdapter = new SelectionAdapter() {
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				WorktimeEntry weCopy = getSelectedWorkEntry();
-
-				WorktimeEntryEditor editor = new WorktimeEntryEditor(HistoryViewer.this.getShell());
-
-				editor.setWorktimeEntry(weCopy);
-				int open = editor.open();
-				if (open == Window.OK) {
-					dataStorage.saveWorktimeEntry(weCopy);
-					setStartDate(weCopy.getDate());
-					dataStorage.saveData();
-				}
-
+			public void widgetSelected(SelectionEvent e) {
+				openEditor();
 			}
 		};
 		miOpenEditor.addSelectionListener(selectionAdapter);
@@ -164,7 +158,12 @@ public class HistoryViewer extends Dialog {
 
 		table.setMenu(popupMenu);
 
-		table.addSelectionListener(selectionAdapter);
+		table.addMouseListener(new org.eclipse.swt.events.MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				openEditor();
+			}
+		});
 
 		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_table.heightHint = 143;
@@ -209,24 +208,29 @@ public class HistoryViewer extends Dialog {
 		TableColumn colComment = tvcComment.getColumn();
 		colComment.setWidth(226);
 		colComment.setText("Kommentar");
-
 		new Label(container, SWT.NONE);
 
 		Composite composite = new Composite(container, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		composite.setLayoutData(gridData);
 		composite.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		lblWeekBalance = new Label(composite, SWT.NONE);
-		lblWeekBalance.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+		lblWeekBalance.setForeground(SWTResourceManager.getColor(144, 238, 144));
 		lblWeekBalance.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		lblWeekBalance.setText("Saldo:");
 
 		lblBalanceOut = new Label(composite, SWT.NONE);
-		lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+		lblBalanceOut.setForeground(SWTResourceManager.getColor(255, 192, 203));
 		lblBalanceOut.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		lblBalanceOut.setLayoutData(new RowData(77, SWT.DEFAULT));
-		lblBalanceOut.setText("0");
+		lblBalanceOut.setText("1");
 		new Label(container, SWT.NONE);
+
+		lbWarning = new Label(container, SWT.NONE);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT, SWT.CENTER).applyTo(lbWarning);
+		lbWarning
+				.setText("...............................................................................................................................................");
 
 		Composite composite_1 = new Composite(container, SWT.NONE);
 		FillLayout fl_composite_1 = new FillLayout(SWT.HORIZONTAL);
@@ -304,23 +308,39 @@ public class HistoryViewer extends Dialog {
 
 		// calc balance
 		int balance = 0;
-		Date today = new Date();
+		int sumPlan = 0;
+		int sumCheck = 0;
+		Date today = new Date(System.currentTimeMillis());
 		for (WorktimeEntry worktimeEntry : list) {
 			int time = WorktimeEntryUtils.getNetWorktimeInMinutes(worktimeEntry);
 			if ((worktimeEntry.getDate().before(today))) {
 				balance += (time - worktimeEntry.getPlanned());
 			}
+			sumPlan += worktimeEntry.getPlanned();
+			if (!(WorktimeEntryUtils.isHoliday(worktimeEntry.getDate()) || "Urlaub".equals(worktimeEntry.getComment()) || "Krank"
+					.equals(worktimeEntry.getComment()))) {
+				sumCheck += ConfigManager.getInstance().getProperty(ConfigManager.CFG_DEFAULT_MINUTES, 480);
+			}
 		}
 
 		lblBalanceOut.setText(WorktimeEntryUtils.formatMinutes(balance));
 
-		if (balance > 0) {
+		if (balance >= 0) {
 			lblWeekBalance.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
 			lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
 		} else {
 			lblWeekBalance.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		}
+
+		String msg;
+		if (sumCheck > sumPlan) {
+			msg = "Es wurden nur " + WorktimeEntryUtils.formatMinutes(sumPlan) + " Std/min verplant, es müssten aber "
+					+ WorktimeEntryUtils.formatMinutes(sumCheck) + " sein!";
+		} else {
+			msg = "Es wurden " + WorktimeEntryUtils.formatMinutes(sumPlan) + " Std/min verplant.";
+		}
+		lbWarning.setText(msg);
 	}
 
 	private WorktimeEntry getSelectedWorkEntry() {
@@ -328,6 +348,20 @@ public class HistoryViewer extends Dialog {
 		Object[] elements = worktimeContentProvider.getElements(null);
 		WorktimeEntry weCopy = WorktimeEntryUtils.clone((WorktimeEntry) elements[selectionIndex]);
 		return weCopy;
+	}
+
+	private void openEditor() {
+		WorktimeEntry weCopy = getSelectedWorkEntry();
+
+		WorktimeEntryEditor editor = new WorktimeEntryEditor(HistoryViewer.this.getShell());
+
+		editor.setWorktimeEntry(weCopy);
+		int open = editor.open();
+		if (open == Window.OK) {
+			dataStorage.saveWorktimeEntry(weCopy);
+			setStartDate(weCopy.getDate());
+			dataStorage.saveData();
+		}
 	}
 
 	public static void openViewer() {

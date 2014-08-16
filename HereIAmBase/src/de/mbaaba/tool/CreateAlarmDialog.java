@@ -8,7 +8,6 @@ import java.util.TimerTask;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -21,9 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -50,18 +47,18 @@ public class CreateAlarmDialog extends Dialog {
 		newShell.setText("Erinnerung anlegen");
 		super.configureShell(newShell);
 	}
-	
+
 	@Override
 	protected Point getInitialLocation(Point initialSize) {
-		Shell shell = this.getShell(); 
-		Monitor primary = shell.getMonitor(); 
-		Rectangle bounds = primary.getBounds (); 
-		Rectangle rect = shell.getBounds ();
-		
-		int x = bounds.x + (bounds.width - rect.width) / 2; 
-		int y = bounds.y + (bounds.height - rect.height) / 2; 
+		Shell shell = this.getShell();
+		Monitor primary = shell.getMonitor();
+		Rectangle bounds = primary.getBounds();
+		Rectangle rect = shell.getBounds();
+
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
 		return new Point(x, y);
-	}	
+	}
 
 	/**
 	 * Create contents of the dialog.
@@ -83,25 +80,22 @@ public class CreateAlarmDialog extends Dialog {
 		gd_dateTime.widthHint = 60;
 		dateTime.setLayoutData(gd_dateTime);
 
-		dateTime.addSelectionListener (new SelectionAdapter () {
-	        public void widgetSelected (SelectionEvent e) {
-	        	calcMinutes();
-	        }
-	    });
-		
-		
-		
+		dateTime.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				calcMinutes();
+			}
+		});
+
 		createTimeAddButton(container, 5);
 		createTimeAddButton(container, 15);
 		createTimeAddButton(container, 30);
 		createTimeAddButton(container, 60);
-		
+
 		lbInMinutes = new Label(container, SWT.NONE);
 		lbInMinutes.setText("(in xx Minuten) ");
 		GridData gd_dateTime2 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_dateTime.widthHint = 80;
 		lbInMinutes.setLayoutData(gd_dateTime2);
-		
 
 		Label lbReminderText = new Label(container, SWT.NONE);
 		lbReminderText.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
@@ -124,9 +118,9 @@ public class CreateAlarmDialog extends Dialog {
 		cal.setTime(new Date());
 		cal.set(Calendar.HOUR_OF_DAY, hours);
 		cal.set(Calendar.MINUTE, minutes);
-		
-		long diff = (cal.getTime().getTime()-System.currentTimeMillis()) / Units.MINUTE;
-		String string = "(in "+WorktimeEntryUtils.formatMinutes((int) diff)+" Minuten)";
+
+		long diff = (cal.getTime().getTime() - System.currentTimeMillis()) / Units.MINUTE;
+		String string = "(in " + WorktimeEntryUtils.formatMinutes((int) diff) + " Minuten)";
 		lbInMinutes.setText(string);
 	}
 
@@ -177,8 +171,9 @@ public class CreateAlarmDialog extends Dialog {
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
+							Log.logfileAdd("Opening alarm window");
 							BreakInfoDialog breakInfoDialog = new BreakInfoDialog(null);
-							breakInfoDialog.openWithData("Erinnerung", msg, 60 * 60);
+							breakInfoDialog.openWithData("Erinnerung", msg, 0 , BreakInfoDialog.IMG_ALARM);
 							t.cancel();
 						}
 					});
@@ -191,7 +186,9 @@ public class CreateAlarmDialog extends Dialog {
 			cal.set(Calendar.MINUTE, minutes);
 			cal.set(Calendar.SECOND, 0);
 
-			t.schedule(tt, new Date(cal.getTimeInMillis()));
+			Date alarmTime = new Date(cal.getTimeInMillis());
+			Log.logfileAdd("Create a new alarm that should ring at " + alarmTime);
+			t.schedule(tt, alarmTime);
 		}
 		super.buttonPressed(buttonId);
 	}
@@ -203,5 +200,7 @@ public class CreateAlarmDialog extends Dialog {
 	protected Point getInitialSize() {
 		return new Point(450, 179);
 	}
+
+
 
 }

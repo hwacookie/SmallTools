@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +53,7 @@ public class DataStorageManager implements DataStorage {
 		}
 
 		// try the old rolling fileAppender data
-		WorktimeEntry worktimeEntry = logfileDataStorage
-				.getWorktimeEntry(aDate);
+		WorktimeEntry worktimeEntry = logfileDataStorage.getWorktimeEntry(aDate);
 
 		// and if it cant be found there, create a new one.
 		if (worktimeEntry == null) {
@@ -95,6 +95,12 @@ public class DataStorageManager implements DataStorage {
 			}
 		}
 
+		Collection<WorktimeEntry> values = data.values();
+		for (WorktimeEntry worktimeEntry : values) {
+			System.out.println("Fixing " + worktimeEntry.getDate());
+			worktimeEntry.fixEntries();
+		}
+		saveData();
 	}
 
 }

@@ -20,7 +20,7 @@ import java.util.Properties;
  * The Class AdapterConfigurator contains functionality to configure the
  * connection parameters for the {@link #Adapter()}.
  */
-public class PropertyFileConfigurator implements Configurator {
+class PropertyFileConfigurator implements Configurator {
 
 	/** The file that contains the configuration data. */
 	private Properties props;
@@ -130,6 +130,11 @@ public class PropertyFileConfigurator implements Configurator {
 	@Override
 	public void setProperty(String aPropertyName, boolean aValue) {
 		setProperty(aPropertyName, Boolean.toString(aValue));
+	}
+
+	@Override
+	public void setProperty(String aPropertyName, int aValue) {
+		setProperty(aPropertyName, Integer.toString(aValue));
 	}
 
 }

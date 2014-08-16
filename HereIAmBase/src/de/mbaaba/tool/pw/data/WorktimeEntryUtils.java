@@ -12,17 +12,16 @@ import com.rits.cloning.Cloner;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
+import de.mbaaba.tool.DataStorageManager;
 import de.mbaaba.util.Units;
 
 public class WorktimeEntryUtils {
 
 	private static Cloner cloner = new Cloner();
 
-	private static HolidayManager holidayManager = HolidayManager
-			.getInstance(HolidayCalendar.GERMANY);
+	private static HolidayManager holidayManager = HolidayManager.getInstance(HolidayCalendar.GERMANY);
 
-	public static final DateFormat DATE_ONLY = new SimpleDateFormat(
-			"dd.MM.yyyy (E)");
+	public static final DateFormat DATE_ONLY = new SimpleDateFormat("dd.MM.yyyy (E)");
 	public static final DateFormat TIME_ONLY = new SimpleDateFormat("HH:mm");
 
 	public static final int SHORT_BREAK_LENGTH = 15;
@@ -31,8 +30,7 @@ public class WorktimeEntryUtils {
 	public static final int LONG_BREAK_LENGTH = 30;
 
 	public static int getNetWorktimeInMinutes(WorktimeEntry we) {
-		if ((((we.getStartTime() == null) || we.getEndTime() == null))
-				|| (we.getEndTime().before(we.getStartTime()))) {
+		if ((((we.getStartTime() == null) || we.getEndTime() == null)) || (we.getEndTime().before(we.getStartTime()))) {
 			return 0;
 		}
 		int breaktime = getBreaktimeMinutes(we);
@@ -44,8 +42,7 @@ public class WorktimeEntryUtils {
 	}
 
 	public static int getBreaktimeMinutes(WorktimeEntry we) {
-		if ((((we.getStartTime() == null) || we.getEndTime() == null))
-				|| (we.getEndTime().before(we.getStartTime()))) {
+		if ((((we.getStartTime() == null) || we.getEndTime() == null)) || (we.getEndTime().before(we.getStartTime()))) {
 			return 0;
 		}
 		long workTime = we.getEndTime().getTime() - we.getStartTime().getTime();
@@ -88,16 +85,14 @@ public class WorktimeEntryUtils {
 		}
 	}
 
-	public static String calculatePlannedBalance(long aStart, Date aDate,
-			int aPlanned, long aNow) {
+	public static int calculatePlannedBalance(long aStart, Date aDate, int aPlanned, long aNow) {
 		int balance;
 		// calculate the time-difference between now and the start time (in
 		// minutes)
 		int actualWorkTime = (int) ((aNow - aStart) / Units.MINUTE);
 
 		// from that time, subtract the break we need to make for that workTime
-		actualWorkTime = actualWorkTime
-				- getBreaktimeMinutes(aDate, actualWorkTime);
+		actualWorkTime = actualWorkTime - getBreaktimeMinutes(aDate, actualWorkTime);
 
 		// what was the planned workTime?
 		int plannedWorkTime = aPlanned;
@@ -110,8 +105,7 @@ public class WorktimeEntryUtils {
 			// no, we have not reached the planned time yet!
 			// add the breaktime back again (it is already contained in the
 			// breaktime for the planned time, see below!)
-			actualWorkTime = actualWorkTime
-					+ getBreaktimeMinutes(aDate, actualWorkTime);
+			actualWorkTime = actualWorkTime + getBreaktimeMinutes(aDate, actualWorkTime);
 
 			int breakTime = getBreaktimeMinutes(aDate, plannedWorkTime);
 			plannedWorkTime += breakTime;
@@ -119,7 +113,7 @@ public class WorktimeEntryUtils {
 			balance = actualWorkTime - plannedWorkTime;
 		}
 
-		return WorktimeEntryUtils.formatMinutes(balance);
+		return balance;
 
 	}
 
@@ -142,13 +136,11 @@ public class WorktimeEntryUtils {
 		res.append(minutes);
 		return res.toString();
 	}
-	
 
 	public static boolean isHoliday(Date date) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(date);
-		if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
-				|| (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
+		if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) || (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
 			return true;
 		}
 		return holidayManager.isHoliday(cal);
@@ -158,18 +150,14 @@ public class WorktimeEntryUtils {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(date);
 
-		if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
-				|| (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
+		if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) || (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
 			return "";
 		}
 
-		Set<Holiday> holidays = holidayManager.getHolidays(cal
-				.get(Calendar.YEAR));
+		Set<Holiday> holidays = holidayManager.getHolidays(cal.get(Calendar.YEAR));
 		for (Holiday holiday : holidays) {
-			if ((holiday.getDate().getDayOfMonth() == cal
-					.get(Calendar.DAY_OF_MONTH))
-					&& (holiday.getDate().getMonthOfYear() == (cal
-							.get(Calendar.MONTH) + 1))) {
+			if ((holiday.getDate().getDayOfMonth() == cal.get(Calendar.DAY_OF_MONTH))
+					&& (holiday.getDate().getMonthOfYear() == (cal.get(Calendar.MONTH) + 1))) {
 				return holiday.getDescription();
 			}
 		}
@@ -180,32 +168,52 @@ public class WorktimeEntryUtils {
 		return cloner.deepClone(aSource);
 	}
 
-	public static String calculatePlannedBalance(WorktimeEntry aWorkEntry,
-			long aTimestamp) {
-		return calculatePlannedBalance(aWorkEntry.getStartTime().getTime(),
-				aWorkEntry.getDate(), aWorkEntry.getPlanned(), aTimestamp);
+	public static int calculatePlannedBalance(WorktimeEntry aWorkEntry, long aTimestamp) {
+		if (aWorkEntry.getStartTime() == null) {
+			return 0;
+		}
+		return calculatePlannedBalance(aWorkEntry.getStartTime().getTime(), aWorkEntry.getDate(), aWorkEntry.getPlanned(),
+				aTimestamp);
 	}
 
-	public static boolean isInShortBreak(WorktimeEntry todaysWorktimeEntry,
-			long aCurrentTime) {
-		long worktime = (System.currentTimeMillis() - todaysWorktimeEntry
-				.getStartTime().getTime()) / Units.MINUTE;
-		if ((worktime > SHORT_BRAKE_START)
-				&& (worktime < SHORT_BRAKE_START + SHORT_BREAK_LENGTH)) {
+	public static boolean isInShortBreak(WorktimeEntry todaysWorktimeEntry, long aCurrentTime) {
+		// no breaks on holidays
+		if (isHoliday(todaysWorktimeEntry.getDate())) {
+			return false;
+		}
+		if (todaysWorktimeEntry.getStartTime() == null) {
+			return false;
+		}
+		long worktime = (System.currentTimeMillis() - todaysWorktimeEntry.getStartTime().getTime()) / Units.MINUTE;
+		if ((worktime > SHORT_BRAKE_START) && (worktime < SHORT_BRAKE_START + SHORT_BREAK_LENGTH)) {
 			return true;
 		}
 		return false;
 	}
 
-	public static boolean isInLongBreak(WorktimeEntry todaysWorktimeEntry,
-			long aCurrentTime) {
-		long worktime = (System.currentTimeMillis() - todaysWorktimeEntry
-				.getStartTime().getTime()) / Units.MINUTE;
-		if ((worktime > LONG_BREAK_START)
-				&& (worktime < LONG_BREAK_START + LONG_BREAK_LENGTH)) {
+	public static boolean isInLongBreak(WorktimeEntry todaysWorktimeEntry, long aCurrentTime) {
+		// no breaks on holidays
+		if (isHoliday(todaysWorktimeEntry.getDate())) {
+			return false;
+		}
+		long worktime = (System.currentTimeMillis() - todaysWorktimeEntry.getStartTime().getTime()) / Units.MINUTE;
+		if ((worktime > LONG_BREAK_START) && (worktime < LONG_BREAK_START + LONG_BREAK_LENGTH)) {
 			return true;
 		}
 		return false;
+	}
+
+	public static int calcMultiDayBalance(Date startDate, Date endDate) {
+		// calc balance
+		int balance = 0;
+		Date currentDate = startDate;
+		while (currentDate.before(endDate)) {
+			WorktimeEntry worktimeEntry = DataStorageManager.getInstance().getWorktimeEntry(currentDate);
+			int time = WorktimeEntryUtils.getNetWorktimeInMinutes(worktimeEntry);
+			balance += (time - worktimeEntry.getPlanned());
+			currentDate = new Date(currentDate.getTime() + Units.DAY);
+		}
+		return balance;
 	}
 
 }
