@@ -196,6 +196,9 @@ public class WorktimeEntryUtils {
 		if (isHoliday(todaysWorktimeEntry.getDate())) {
 			return false;
 		}
+		if (todaysWorktimeEntry.getStartTime() == null) {
+			return false;
+		}		
 		long worktime = (System.currentTimeMillis() - todaysWorktimeEntry.getStartTime().getTime()) / Units.MINUTE;
 		if ((worktime > LONG_BREAK_START) && (worktime < LONG_BREAK_START + LONG_BREAK_LENGTH)) {
 			return true;

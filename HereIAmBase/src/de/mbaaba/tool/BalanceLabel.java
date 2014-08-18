@@ -1,6 +1,8 @@
 package de.mbaaba.tool;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,8 +14,10 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -22,7 +26,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.util.Units;
-import org.eclipse.swt.layout.GridData;
 
 public class BalanceLabel extends Composite {
 
@@ -104,6 +107,11 @@ public class BalanceLabel extends Composite {
 		};
 		lbBalance.addMouseListener(mouseAdapter);
 	}
+	
+	
+	public Control getControl() {
+		return lbBalance;
+	}
 
 	private void createUpdateTimer() {
 		Timer t = new Timer(false);
@@ -130,7 +138,11 @@ public class BalanceLabel extends Composite {
 						setBalance(WorktimeEntryUtils.calculatePlannedBalance(todaysWorktimeEntry, currentTimeMillis));
 
 					} else {
-						setBalance(WorktimeEntryUtils.calcMultiDayBalance(startDate, new Date(currentTimeMillis + Units.DAY)));
+						Calendar cal = new GregorianCalendar();
+						cal.set(Calendar.HOUR_OF_DAY, 23);
+						cal.set(Calendar.MINUTE, 59);
+						Date endOfToday = cal.getTime();
+						setBalance(WorktimeEntryUtils.calcMultiDayBalance(startDate, endOfToday));
 					}
 
 					if ((WorktimeEntryUtils.isInShortBreak(todaysWorktimeEntry, currentTimeMillis) || (WorktimeEntryUtils
@@ -183,5 +195,6 @@ public class BalanceLabel extends Composite {
 		}
 
 	}
+	
 
 }

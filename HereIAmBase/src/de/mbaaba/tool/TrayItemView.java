@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
+import de.mbaaba.util.ConfigManager;
+
 public class TrayItemView {
 	private Image iconGreen;
 	private Image iconYellow;
@@ -47,6 +49,10 @@ public class TrayItemView {
 			});
 			trayItem.addListener(SWT.Selection, new Listener() {
 				public void handleEvent(Event event) {
+					boolean visibility = ConfigManager.getInstance().getProperty(ConfigManager.CFG_SHOW_DISPLAY, false);
+					visibility = !visibility;
+					ConfigManager.getInstance().setProperty(ConfigManager.CFG_SHOW_DISPLAY, visibility);
+					
 				}
 			});
 			trayItem.addListener(SWT.DefaultSelection, new Listener() {

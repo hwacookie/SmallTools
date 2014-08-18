@@ -127,14 +127,14 @@ public class PresenceWatcher {
 		GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(true).spacing(0, 0).margins(new Point(0, 0)).applyTo(composite);
 
 		lbDailyBalance = new BalanceLabel(composite, SWT.NONE);
-		createTooltip(lbDailyBalance);
+		createTooltip(lbDailyBalance.getControl());
 		lbDailyBalance.setStartDate(null);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).align(SWT.CENTER, SWT.CENTER).applyTo(lbDailyBalance);
 
 		lbMonthlyBalance = new BalanceLabel(composite, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).align(SWT.CENTER, SWT.CENTER).applyTo(lbMonthlyBalance);
-		createTooltip(lbMonthlyBalance);
+		createTooltip(lbMonthlyBalance.getControl());
 		Calendar cal = new GregorianCalendar();
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 		lbMonthlyBalance.setStartDate(cal.getTime());
@@ -160,6 +160,7 @@ public class PresenceWatcher {
 
 		boolean shellVisible = configurator.getProperty(ConfigManager.CFG_SHOW_DISPLAY, true);
 		shell.setVisible(Boolean.valueOf(shellVisible));
+		shell.setFocus();
 		miShellVisible.setSelection(shell.isVisible());
 
 		setRemindOnBreakes(configurator.getProperty(ConfigManager.CFG_REMIND_ON_BREAKS, true));
@@ -195,6 +196,7 @@ public class PresenceWatcher {
 				return "Anwesenheits-Info";
 			}
 		};
+
 		myTooltipLabel.setShift(new Point(10, 10));
 		myTooltipLabel.setHideOnMouseDown(false);
 		myTooltipLabel.activate();
@@ -402,16 +404,21 @@ public class PresenceWatcher {
 		if (aLongVersion) {
 			if (timeToStayString.startsWith("-")) {
 				statusMessage = "Du bist um " + WorktimeEntryUtils.TIME_ONLY.format(todaysWorktimeEntry.getStartTime())
-						+ " gekommen,\n" + "müsstest heute eigentlich "
+						+ " gekommen,\n" + "wolltest heute eigentlich "
 						+ WorktimeEntryUtils.formatMinutes(todaysWorktimeEntry.getPlanned()) + " arbeiten,\n"
-						+ "und kannst demnach inklusive einer Pause von\n" + WorktimeEntryUtils.formatMinutes(breakMinutes)
-						+ " um " + WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + " gehen, " + "also in "
+						+ "hast davon schon "
+						+ (WorktimeEntryUtils.formatMinutes(WorktimeEntryUtils.getNetWorktimeInMinutes(todaysWorktimeEntry)))
+						+ " hinter dir,\n" + "und kannst demnach inklusive einer Pause von\n"
+						+ WorktimeEntryUtils.formatMinutes(breakMinutes) + " um "
+						+ WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + " gehen, " + "also in "
 						+ timeToStayString.substring(1) + " Std/Minuten.";
 
 			} else {
 				statusMessage = "Du bist um " + WorktimeEntryUtils.TIME_ONLY.format(todaysWorktimeEntry.getStartTime())
 						+ " gekommen,\nmusstest heute " + WorktimeEntryUtils.formatMinutes(todaysWorktimeEntry.getPlanned())
-						+ " arbeiten,\nund konntest demnach inklusive\neiner Pause von "
+						+ " arbeiten,\nwarst tatsächlich aber sogar "
+						+ (WorktimeEntryUtils.formatMinutes(WorktimeEntryUtils.getNetWorktimeInMinutes(todaysWorktimeEntry)))
+						+ " lang fleissig,\nund konntest demnach inklusive\neiner Pause von "
 						+ WorktimeEntryUtils.formatMinutes(breakMinutes) + " um "
 						+ WorktimeEntryUtils.TIME_ONLY.format(possibleEndDate) + " gehen,\n" + "also schon vor "
 						+ timeToStayString + " Std/Minuten";

@@ -228,9 +228,9 @@ public class HistoryViewer extends Dialog {
 		new Label(container, SWT.NONE);
 
 		lbWarning = new Label(container, SWT.NONE);
-		GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT, SWT.CENTER).applyTo(lbWarning);
-		lbWarning
-				.setText("...............................................................................................................................................");
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT, SWT.CENTER).minSize(500, 0).applyTo(lbWarning);
+//		lbWarning
+//				.setText("...............................................................................................................................................");
 
 		Composite composite_1 = new Composite(container, SWT.NONE);
 		FillLayout fl_composite_1 = new FillLayout(SWT.HORIZONTAL);
@@ -336,9 +336,11 @@ public class HistoryViewer extends Dialog {
 		String msg;
 		if (sumCheck > sumPlan) {
 			msg = "Es wurden nur " + WorktimeEntryUtils.formatMinutes(sumPlan) + " Std/min verplant, es müssten aber "
-					+ WorktimeEntryUtils.formatMinutes(sumCheck) + " sein!";
+					+ WorktimeEntryUtils.formatMinutes(sumCheck) + " sein! ("
+					+ WorktimeEntryUtils.formatMinutes(sumCheck - sumPlan) + " Minusstunden)";
 		} else {
-			msg = "Es wurden " + WorktimeEntryUtils.formatMinutes(sumPlan) + " Std/min verplant.";
+			msg = "Es wurden " + WorktimeEntryUtils.formatMinutes(sumPlan) + " Std/min verplant ("
+					+ WorktimeEntryUtils.formatMinutes(sumPlan - sumCheck) + " Überstunden)";
 		}
 		lbWarning.setText(msg);
 	}
