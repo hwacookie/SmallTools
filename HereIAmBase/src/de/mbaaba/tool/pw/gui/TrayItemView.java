@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import java.io.InputStream;
 

@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.mbaaba.util.ConfigManager;
 import de.mbaaba.util.Configurator;
 
-public class ConfigEditor extends Dialog {
+public class ConfigEditorDialog extends Dialog {
 
 	private final Configurator configurator = ConfigManager.getInstance();
 
@@ -87,7 +87,7 @@ public class ConfigEditor extends Dialog {
 	 * 
 	 * @param parentShell
 	 */
-	public ConfigEditor(Shell parentShell) {
+	public ConfigEditorDialog(Shell parentShell) {
 		super(parentShell);
 	}
 

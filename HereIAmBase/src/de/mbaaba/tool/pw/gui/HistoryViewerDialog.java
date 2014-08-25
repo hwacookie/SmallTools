@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,7 +11,6 @@ import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -41,13 +40,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import de.mbaaba.tool.pw.DataStorageManager;
 import de.mbaaba.tool.pw.data.WorktimeContentProvider;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
-import de.mbaaba.tool.pw.data.WorktimeLabelProvider;
 import de.mbaaba.util.ConfigManager;
 
-public class HistoryViewer extends Dialog {
+public class HistoryViewerDialog extends Dialog {
 
 	private Table table;
 	private TableViewer tableViewer;
@@ -68,7 +67,7 @@ public class HistoryViewer extends Dialog {
 	 * 
 	 * @param parentShell
 	 */
-	public HistoryViewer(Shell parentShell) {
+	public HistoryViewerDialog(Shell parentShell) {
 		super(parentShell);
 		worktimeContentProvider = new WorktimeContentProvider();
 		labelProvider = new WorktimeLabelProvider();
@@ -355,7 +354,7 @@ public class HistoryViewer extends Dialog {
 	private void openEditor() {
 		WorktimeEntry weCopy = getSelectedWorkEntry();
 
-		WorktimeEntryEditor editor = new WorktimeEntryEditor(HistoryViewer.this.getShell());
+		WorktimeEntryEditorDialog editor = new WorktimeEntryEditorDialog(HistoryViewerDialog.this.getShell());
 
 		editor.setWorktimeEntry(weCopy);
 		int open = editor.open();
@@ -369,7 +368,7 @@ public class HistoryViewer extends Dialog {
 	public static void openViewer() {
 		Realm.runWithDefault(SWTObservables.getRealm(Display.getDefault()), new Runnable() {
 			public void run() {
-				HistoryViewer historyViewer = new HistoryViewer(null);
+				HistoryViewerDialog historyViewer = new HistoryViewerDialog(null);
 				historyViewer.open();
 			}
 		});

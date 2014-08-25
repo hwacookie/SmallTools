@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw;
 
 import java.util.Date;
 

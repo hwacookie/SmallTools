@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.PojoProperties;
@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Text;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 
-public class WorktimeEntryEditor extends Dialog {
+public class WorktimeEntryEditorDialog extends Dialog {
 	private DataBindingContext m_bindingContext;
 	private Text txtComment;
 	private Label lblHeadline;
@@ -36,7 +36,7 @@ public class WorktimeEntryEditor extends Dialog {
 	 * 
 	 * @param parentShell
 	 */
-	public WorktimeEntryEditor(Shell parentShell) {
+	public WorktimeEntryEditorDialog(Shell parentShell) {
 		super(parentShell);
 	}
 

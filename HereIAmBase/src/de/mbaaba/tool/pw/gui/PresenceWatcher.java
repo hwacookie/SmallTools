@@ -5,7 +5,7 @@
  * All rights reserved.
  * --------------------------------------------------------------------------
  */
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -33,8 +33,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import de.mbaaba.tool.pw.DataStorageManager;
+import de.mbaaba.tool.pw.FancyJFaceTooltip;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
+import de.mbaaba.tool.pw.detectors.AbstractActivityDetector;
+import de.mbaaba.tool.pw.detectors.ScreenLockActivityDetector;
 import de.mbaaba.util.ConfigManager;
 import de.mbaaba.util.Configurator;
 import de.mbaaba.util.Units;
@@ -79,7 +83,6 @@ public class PresenceWatcher {
 
 	public PresenceWatcher() throws IOException, InterruptedException {
 		createGui();
-		shell.pack();
 
 		ConfigManager.getInstance().registerConfigListener(new Listener() {
 			@Override
@@ -139,11 +142,10 @@ public class PresenceWatcher {
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 		lbMonthlyBalance.setStartDate(cal.getTime());
 
-		composite.pack();
-
 		trayItemView = new TrayItemView(display);
 
 		Menu popupMenu = createPopup();
+		composite.pack();
 
 		lbDailyBalance.setMenu(popupMenu);
 		lbMonthlyBalance.setMenu(popupMenu);
@@ -218,7 +220,7 @@ public class PresenceWatcher {
 
 			@Override
 			public void widgetSelected(SelectionEvent aE) {
-				HistoryViewer.openViewer();
+				HistoryViewerDialog.openViewer();
 				lbDailyBalance.setStartDate(null);
 				Calendar cal = new GregorianCalendar();
 				cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -247,7 +249,7 @@ public class PresenceWatcher {
 
 			@Override
 			public void widgetSelected(SelectionEvent aE) {
-				ConfigEditor configEditor = new ConfigEditor(null);
+				ConfigEditorDialog configEditor = new ConfigEditorDialog(null);
 				configEditor.open();
 			}
 
@@ -481,42 +483,6 @@ public class PresenceWatcher {
 		return display;
 	}
 
-	// protected String calcMonthBalance() {
-	// if ((lblBalanceOut != null) && (lblBalanceOut.isVisible()) {
-	// Calendar cal = new GregorianCalendar();
-	// Date date = new Date();
-	// cal.setTime(date);
-	// List<WorktimeEntry> list = new ArrayList<WorktimeEntry>();
-	// int day = 0;
-	// int currentMonth = cal.get(Calendar.MONTH);
-	// while (cal.get(Calendar.MONTH) == currentMonth) {
-	// day++;
-	// cal.set(Calendar.DAY_OF_MONTH, day);
-	// if (cal.get(Calendar.MONTH) == currentMonth) {
-	// Date thisDate = cal.getTime();
-	// list.add(dataStorage.getWorktimeEntry(thisDate));
-	// }
-	// }
-	//
-	// // calc balance
-	// int balance = 0;
-	// Date yesterday = new Date(System.currentTimeMillis() - Units.DAY);
-	// for (WorktimeEntry worktimeEntry : list) {
-	// int time = WorktimeEntryUtils.getNetWorktimeInMinutes(worktimeEntry);
-	// if ((worktimeEntry.getDate().before(yesterday))) {
-	// balance += (time - worktimeEntry.getPlanned());
-	// }
-	// }
-	//
-	// String formatMinutes = WorktimeEntryUtils.formatMinutes(balance);
-	// lblBalanceOut.setText(formatMinutes);
-	//
-	// if (balance >= 0) {
-	// lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
-	// } else {
-	// lblBalanceOut.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-	// }
-	// }
-	// }
+
 
 }

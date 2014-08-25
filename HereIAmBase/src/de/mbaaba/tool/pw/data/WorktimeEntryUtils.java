@@ -12,7 +12,7 @@ import com.rits.cloning.Cloner;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
-import de.mbaaba.tool.DataStorageManager;
+import de.mbaaba.tool.pw.DataStorageManager;
 import de.mbaaba.util.Units;
 
 public class WorktimeEntryUtils {

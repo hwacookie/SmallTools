@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -97,7 +97,6 @@ public class DataStorageManager implements DataStorage {
 
 		Collection<WorktimeEntry> values = data.values();
 		for (WorktimeEntry worktimeEntry : values) {
-			System.out.println("Fixing " + worktimeEntry.getDate());
 			worktimeEntry.fixEntries();
 		}
 		saveData();

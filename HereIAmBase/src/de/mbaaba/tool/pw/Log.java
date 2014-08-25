@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,5 +14,4 @@ public class Log {
 		System.out.println(msg);
 		logger.info(msg);
 	}
-
 }

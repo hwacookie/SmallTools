@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -23,6 +22,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import de.mbaaba.tool.pw.DataStorageManager;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.util.Units;
@@ -66,16 +66,13 @@ public class BalanceLabel extends Composite {
 		setLayout(gridLayout);
 
 		lbBalance = new Label(this, SWT.NONE);
-		lbBalance.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gridData.verticalAlignment = SWT.CENTER;
+		gridData.horizontalAlignment = SWT.CENTER;
+		gridData.minimumWidth = 60;
+		lbBalance.setLayoutData(gridData);
 		lbBalance.setAlignment(SWT.CENTER);
 		lbBalance.setText("-100:00");
-
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(lbBalance);
-
-		// GridData gridData = new GridData(SWT.FILL);
-		// gridData.grabExcessHorizontalSpace = true;
-		// gridData.grabExcessVerticalSpace = true;
-		// lbBalance.setLayoutData(gridData);
 
 		lbBalance.addMouseMoveListener(new MouseMoveListener() {
 

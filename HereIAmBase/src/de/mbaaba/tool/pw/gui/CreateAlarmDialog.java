@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.gui;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import de.mbaaba.tool.pw.Log;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.util.Units;
 

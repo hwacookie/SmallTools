@@ -5,7 +5,7 @@
  * All rights reserved.
  * --------------------------------------------------------------------------
  */
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.detectors;
 
 import java.awt.MouseInfo;
 import java.awt.PointerInfo;

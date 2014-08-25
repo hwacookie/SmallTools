@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw.detectors;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
+import de.mbaaba.tool.pw.DataStorageManager;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 
 public abstract class AbstractActivityDetector {

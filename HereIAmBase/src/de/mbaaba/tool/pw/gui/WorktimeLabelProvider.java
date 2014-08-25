@@ -1,9 +1,12 @@
-package de.mbaaba.tool.pw.data;
+package de.mbaaba.tool.pw.gui;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
+
+import de.mbaaba.tool.pw.data.WorktimeEntry;
+import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 
 public class WorktimeLabelProvider extends CellLabelProvider implements
 		ITableLabelProvider {

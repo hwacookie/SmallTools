@@ -1,4 +1,4 @@
-package de.mbaaba.tool;
+package de.mbaaba.tool.pw;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Policy;
