@@ -208,7 +208,7 @@ public class BreakInfoDialog extends Dialog {
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		Button createButton = createButton(parent, IDialogConstants.OK_ID, "Jaja, schon gut!", true);
+		createButton(parent, IDialogConstants.OK_ID, "Jaja, schon gut!", true);
 	}
 
 }

@@ -38,11 +38,12 @@ import de.mbaaba.tool.pw.FancyJFaceTooltip;
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.tool.pw.detectors.AbstractActivityDetector;
-import de.mbaaba.tool.pw.detectors.ScreenLockActivityDetector;
+import de.mbaaba.tool.pw.detectors.MouseMoveActivityDetector;
 import de.mbaaba.util.ConfigManager;
 import de.mbaaba.util.Configurator;
 import de.mbaaba.util.Units;
 
+@SuppressWarnings("unused")
 public class PresenceWatcher {
 
 	private Display display;
@@ -171,7 +172,7 @@ public class PresenceWatcher {
 
 		loadShellPos();
 
-		activityDetector = new ScreenLockActivityDetector();
+		activityDetector = new MouseMoveActivityDetector(AbstractActivityDetector.MIN_ACTIVITY_TIME, AbstractActivityDetector.INACTIVITY_TIME);
 
 	}
 

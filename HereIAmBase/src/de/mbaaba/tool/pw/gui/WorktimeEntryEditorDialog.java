@@ -23,7 +23,6 @@ import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 
 public class WorktimeEntryEditorDialog extends Dialog {
-	private DataBindingContext m_bindingContext;
 	private Text txtComment;
 	private Label lblHeadline;
 	private DateTime dtCome;
@@ -127,7 +126,7 @@ public class WorktimeEntryEditorDialog extends Dialog {
 				true);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
-		m_bindingContext = initDataBindings();
+		initDataBindings();
 	}
 
 	@Override
