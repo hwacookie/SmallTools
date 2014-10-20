@@ -89,6 +89,7 @@ public class PresenceWatcher {
 			@Override
 			public void handleEvent(Event arg0) {
 				readConfig();
+				activityDetector.startDetection();
 			}
 		});
 
