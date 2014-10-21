@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
@@ -41,6 +42,10 @@ import org.eclipse.swt.widgets.Display;
  * @author Dan Rubel
  */
 public class SWTResourceManager {
+	
+	/**
+			The logger.*/
+	private static final Logger LOG = Logger.getLogger(SWTResourceManager.class);
 	////////////////////////////////////////////////////////////////////////////
 	//
 	// Color
@@ -355,7 +360,8 @@ public class SWTResourceManager {
 						}
 					}
 				} catch (Throwable e) {
-					System.err.println("Unable to set underline or strikeout" + " (probably on a non-Windows platform). " + e); //$NON-NLS-1$ //$NON-NLS-2$
+					
+					LOG.error("Unable to set underline or strikeout" + " (probably on a non-Windows platform). ", e);
 				}
 			}
 			font = new Font(Display.getCurrent(), fontData);

@@ -16,11 +16,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 /**
  * The Class AdapterConfigurator contains functionality to configure the
  * connection parameters for the {@link #Adapter()}.
  */
 class PropertyFileConfigurator implements Configurator {
+
+	/**
+	 * The logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(PropertyFileConfigurator.class);
 
 	/** The file that contains the configuration data. */
 	private Properties props;
@@ -37,18 +44,17 @@ class PropertyFileConfigurator implements Configurator {
 		propFileName = aPropFileName;
 		readProperties();
 	}
-	
-	
+
 	public boolean saveProperties() {
 		File f = new File(propFileName);
 		try {
-			props.save(new FileOutputStream(f),"");
+			props.save(new FileOutputStream(f), "");
 			return true;
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 			return false;
 		}
-		
+
 	}
 
 	/**
@@ -73,12 +79,11 @@ class PropertyFileConfigurator implements Configurator {
 				props.load(resourceStream);
 				return true;
 			}
-			
+
 		} catch (IOException e) {
 		}
 		return false;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -116,16 +121,14 @@ class PropertyFileConfigurator implements Configurator {
 	}
 
 	private void printerr(String aString) {
-		System.err.println(aString);
+		LOG.error(aString);
 	}
-
 
 	@Override
 	public boolean getProperty(String aPropertyName, boolean aDefaultValue) {
 		String s = getProperty(aPropertyName, String.valueOf(aDefaultValue));
 		return Boolean.valueOf(s);
 	}
-
 
 	@Override
 	public void setProperty(String aPropertyName, boolean aValue) {

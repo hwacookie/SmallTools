@@ -20,6 +20,9 @@ import de.mbaaba.util.Units;
 
 public abstract class AbstractActivityDetector {
 
+	/** The logger. */
+	private static final Logger LOG = Logger.getLogger(AbstractActivityDetector.class);
+
 	public static final long INACTIVITY_TIME = Units.SECOND * 60;
 	public static final long MIN_ACTIVITY_TIME = Units.SECOND * 30;
 
@@ -33,7 +36,7 @@ public abstract class AbstractActivityDetector {
 
 	protected DataStorageManager dataStorage = DataStorageManager.getInstance();
 
-	private Logger logger = Logger.getLogger("ActivityDetector");
+	private Logger logFileStorage = Logger.getLogger("ActivityDetector");
 
 	private Activity activity;
 	protected long inactivityTime;
@@ -52,38 +55,27 @@ public abstract class AbstractActivityDetector {
 			DailyRollingFileAppender dailyRollingFileAppender;
 			dailyRollingFileAppender = new DailyRollingFileAppender(new SimpleLayout(), homeFile.getCanonicalPath()
 					+ "/PresenceWatcher.log", "'.'yyyy-MM-dd");
-			logger.addAppender(dailyRollingFileAppender);
+			logFileStorage.addAppender(dailyRollingFileAppender);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
 	protected void setActivity(Activity aActivity) {
 		if (aActivity != activity) {
 			String currentUser = new com.sun.security.auth.module.NTSystem().getName();
-			System.out.println("Settting activity to " + aActivity + ". Current user is " + currentUser);
+			LOG.debug("Settting activity to " + aActivity + ". Current user is " + currentUser);
 
 			activity = aActivity;
 			logfileAdd(activity.name());
-			Date now = new Date();
-			WorktimeEntry worktimeEntry = dataStorage.getTodaysWorktimeEntry();
+
+			saveTimestamp();
 
 			switch (activity) {
 			case IDLE:
-				worktimeEntry.setEndTime(now);
-				dataStorage.saveWorktimeEntry(worktimeEntry);
-				dataStorage.saveData();
+//				java.awt.Toolkit.getDefaultToolkit().beep();
 				break;
 			case WORKING:
-				// java.awt.Toolkit.getDefaultToolkit().beep();
-				// make sure that todays worktimeEntry has a start date!
-				if (worktimeEntry.getStartTime() == null) {
-					worktimeEntry.setStartTime(now);
-				}
-				dataStorage.saveWorktimeEntry(worktimeEntry);
-				dataStorage.saveData();
-
 				break;
 			default:
 				break;
@@ -91,17 +83,28 @@ public abstract class AbstractActivityDetector {
 		}
 	}
 
+	public static void saveTimestamp() {
+		Date now = new Date();
+		WorktimeEntry worktimeEntry = DataStorageManager.getInstance().getTodaysWorktimeEntry();
+		worktimeEntry.setEndTime(now);
+		if (worktimeEntry.getStartTime() == null) {
+			worktimeEntry.setStartTime(now);
+		}
+		DataStorageManager.getInstance().saveWorktimeEntry(worktimeEntry);
+		DataStorageManager.getInstance().saveData();
+	}
+
 	private void logfileAdd(String aString) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		String msg = sdf.format(new Date()) + ": " + aString;
-		System.out.println(msg);
-		logger.info(msg);
+		LOG.info(msg);
+		logFileStorage.info(msg);
 	}
 
 	public final void startDetection() {
 		setActivity(Activity.WORKING);
 		lastActivityAt = System.currentTimeMillis();
-		
+
 		Timer t = new Timer(false);
 		TimerTask tt = new TimerTask() {
 
@@ -116,6 +119,9 @@ public abstract class AbstractActivityDetector {
 
 	}
 
-	
+	public final void stopDetection() {
+		setActivity(Activity.IDLE);
+	}
+
 	public abstract void detect(Point newMousePos);
 }

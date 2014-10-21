@@ -14,11 +14,15 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -45,6 +49,15 @@ import de.mbaaba.util.Units;
 
 @SuppressWarnings("unused")
 public class PresenceWatcher {
+
+	static {
+		PropertyConfigurator.configure("etc/log4j.properties");
+	}
+
+	/**
+	 * The logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(PresenceWatcher.class);
 
 	private Display display;
 
@@ -128,6 +141,19 @@ public class PresenceWatcher {
 		// rowLayout.marginBottom=0;
 		// rowLayout.marginLeft=0;
 		// rowLayout.marginRight=0;
+		shell.addDisposeListener(new DisposeListener() {
+
+			@Override
+			public void widgetDisposed(DisposeEvent arg0) {
+				AbstractActivityDetector.saveTimestamp();
+			}
+		});
+		// Runtime.getRuntime().addShutdownHook(new Thread() {
+		// @Override
+		// public void run() {
+		// activityDetector.stopDetection();
+		// }
+		// });
 
 		GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(true).spacing(0, 0).margins(new Point(0, 0)).applyTo(composite);
 
@@ -173,7 +199,8 @@ public class PresenceWatcher {
 
 		loadShellPos();
 
-		activityDetector = new MouseMoveActivityDetector(AbstractActivityDetector.MIN_ACTIVITY_TIME, AbstractActivityDetector.INACTIVITY_TIME);
+		activityDetector = new MouseMoveActivityDetector(AbstractActivityDetector.MIN_ACTIVITY_TIME,
+				AbstractActivityDetector.INACTIVITY_TIME);
 
 	}
 
@@ -484,7 +511,5 @@ public class PresenceWatcher {
 		}
 		return display;
 	}
-
-
 
 }

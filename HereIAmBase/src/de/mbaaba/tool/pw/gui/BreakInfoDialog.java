@@ -7,6 +7,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -14,7 +15,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -26,6 +26,10 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import de.mbaaba.util.Units;
 
 public class BreakInfoDialog extends Dialog {
+	/**
+			The logger.*/
+	private static final Logger LOG = Logger.getLogger(BreakInfoDialog.class);
+	
 
 	protected static final String IMG_ALARM = "alarm.png";
 	protected static final String IMG_WALK = "walking.png";
@@ -195,7 +199,7 @@ public class BreakInfoDialog extends Dialog {
 					clip.open(inputStream);
 					clip.start();
 				} catch (Exception e) {
-					System.err.println(e.getMessage());
+					LOG.info(e.getMessage(), e);
 				}
 			}
 		}).start();

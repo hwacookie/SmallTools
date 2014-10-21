@@ -5,10 +5,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 public class ConfigManager implements Configurator {
+	/**
+	 * The logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(ConfigManager.class);
 
 	public static final String CFG_LONG_BREAK = "longBreak";
 	public static final String CFG_SHORT_BREAK = "shortBreak";
@@ -42,7 +47,7 @@ public class ConfigManager implements Configurator {
 		try {
 			configFile = new PropertyFileConfigurator(appdata.getCanonicalPath());
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 
 		if (configFile != null) {

@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
@@ -47,6 +48,10 @@ import de.mbaaba.tool.pw.data.WorktimeEntryUtils;
 import de.mbaaba.util.ConfigManager;
 
 public class HistoryViewerDialog extends Dialog {
+	/**
+	 * The logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(HistoryViewerDialog.class);
 
 	private Table table;
 	private TableViewer tableViewer;
@@ -228,8 +233,8 @@ public class HistoryViewerDialog extends Dialog {
 
 		lbWarning = new Label(container, SWT.NONE);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT, SWT.CENTER).minSize(500, 0).applyTo(lbWarning);
-//		lbWarning
-//				.setText("...............................................................................................................................................");
+		// lbWarning
+		// .setText("...............................................................................................................................................");
 
 		Composite composite_1 = new Composite(container, SWT.NONE);
 		FillLayout fl_composite_1 = new FillLayout(SWT.HORIZONTAL);
@@ -301,8 +306,7 @@ public class HistoryViewerDialog extends Dialog {
 			tableViewer.setInput(list.toArray(new WorktimeEntry[list.size()]));
 			tableViewer.setItemCount(list.size());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 
 		// calc balance

@@ -2,6 +2,7 @@ package de.mbaaba.tool.pw.gui;
 
 import java.io.InputStream;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -14,6 +15,10 @@ import org.eclipse.swt.widgets.TrayItem;
 import de.mbaaba.util.ConfigManager;
 
 public class TrayItemView {
+	/**
+	 * The logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(TrayItemView.class);
 	private Image iconGreen;
 	private Image iconYellow;
 	private Image iconRed;
@@ -36,7 +41,7 @@ public class TrayItemView {
 		loadImages();
 		final Tray tray = display.getSystemTray();
 		if (tray == null) {
-			System.out.println("The system tray is not available");
+			LOG.error("The system tray is not available");
 		} else {
 			trayItem = new TrayItem(tray, SWT.NONE);
 			trayItem.addListener(SWT.Show, new Listener() {
@@ -52,7 +57,7 @@ public class TrayItemView {
 					boolean visibility = ConfigManager.getInstance().getProperty(ConfigManager.CFG_SHOW_DISPLAY, false);
 					visibility = !visibility;
 					ConfigManager.getInstance().setProperty(ConfigManager.CFG_SHOW_DISPLAY, visibility);
-					
+
 				}
 			});
 			trayItem.addListener(SWT.DefaultSelection, new Listener() {

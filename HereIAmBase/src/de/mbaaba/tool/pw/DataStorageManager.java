@@ -10,12 +10,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.thoughtworks.xstream.XStream;
 
 import de.mbaaba.tool.pw.data.WorktimeEntry;
 import de.mbaaba.util.Units;
 
 public class DataStorageManager implements DataStorage {
+	/**
+	 * The logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(DataStorageManager.class);
 
 	private LogfileDataStorage logfileDataStorage;
 	private Map<Long, WorktimeEntry> data = new HashMap<Long, WorktimeEntry>();
@@ -73,9 +79,9 @@ public class DataStorageManager implements DataStorage {
 		try (FileOutputStream fos = new FileOutputStream(homeFile)) {
 			xStream.toXML(data, fos);
 		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+			LOG.error(e1.getMessage(), e1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -86,9 +92,9 @@ public class DataStorageManager implements DataStorage {
 		try (FileInputStream fin = new FileInputStream(homeFile)) {
 			data = (Map<Long, WorktimeEntry>) xStream.fromXML(fin);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		} finally {
 			if (data == null) {
 				data = new HashMap<Long, WorktimeEntry>();
